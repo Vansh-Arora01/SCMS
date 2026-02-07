@@ -43,12 +43,7 @@ router.get(
 );
 
 // Get complaint by ID
-router.get(
-  "/:id",
-  verifyJWT,
-  complaintIdValidator,
-  getComplaintById
-);
+
 
 /**
  * ===============================
@@ -77,5 +72,10 @@ router.delete(
   allowRoles("ADMIN","SUPER_ADMIN"),
   deleteComplaint
 );
-
+router.get(
+  "/:id",
+  verifyJWT,
+  complaintIdValidator,
+  getComplaintById
+);
 export default router;

@@ -1,0 +1,993 @@
+{
+  "info": {
+    "_postman_id": "590b4997-83ad-4196-906c-d17d70833ceb",
+    "name": "SCMS-LPBEI",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "48079924",
+    "_collection_link": "https://go.postman.co/collection/48079924-590b4997-83ad-4196-906c-d17d70833ceb?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": [
+            {
+              "name": "Register",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n   \"name\":\"ten\",\r\n   \"email\":\"ten@ten.com\",\r\n   \"enrollment\":\"TCa2309210\",\r\n   \"college\":\"CCSIT\",\r\n   \"password\":\"123456\"\r\n\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{SCMS}}/auth/register",
+                  "host": [
+                    "{{SCMS}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "http://localhost:5173"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Origin"
+                },
+                {
+                  "key": "Access-Control-Allow-Credentials",
+                  "value": "true"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "431"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"1af-F4Uygr5dJd0ZPIWAKSwKmVzQiCw\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 07 Feb 2026 17:48:14 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"data\": {\n        \"user\": {\n            \"_id\": \"69877ad9e582e605fbf48ef8\",\n            \"name\": \"ten\",\n            \"email\": \"ten@ten.com\",\n            \"role\": \"STUDENT\",\n            \"college\": \"CCSIT\",\n            \"collegeId\": \"697eed8849cdfdf91a332059\",\n            \"enrollment\": \"TCA2309210\",\n            \"isActive\": true,\n            \"isEmailVerified\": false,\n            \"createdAt\": \"2026-02-07T17:48:09.223Z\",\n            \"updatedAt\": \"2026-02-07T17:48:09.365Z\",\n            \"__v\": 0\n        }\n    },\n    \"message\": \"User registered SuccessFully and verification Email is sent on Your Email\",\n    \"success\": true\n}"
+            }
+          ]
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": [
+            {
+              "name": "Login",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n   \"name\":\"ten\",\r\n   \"email\":\"ten@ten.com\",\r\n   \"enrollment\":\"TCa2309210\",\r\n   \"role\":\"STUDENT\",\r\n   \"password\":\"123456\"\r\n\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{SCMS}}/auth/login",
+                  "host": [
+                    "{{SCMS}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "http://localhost:5173"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Origin"
+                },
+                {
+                  "key": "Access-Control-Allow-Credentials",
+                  "value": "true"
+                },
+                {
+                  "key": "Set-Cookie",
+                  "value": "accessToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTg3N2FkOWU1ODJlNjA1ZmJmNDhlZjgiLCJyb2xlIjoiU1RVREVOVCIsImNvbGxlZ2UiOiJDQ1NJVCIsIm5hbWUiOiJ0ZW4iLCJlbWFpbCI6InRlbkB0ZW4uY29tIiwiY29sbGVnZUlkIjoiNjk3ZWVkODg0OWNkZmRmOTFhMzMyMDU5IiwiaWF0IjoxNzcwNDg2NjU4LCJleHAiOjE3NzEwOTE0NTh9.sMdFfIAu9gZ9dyQtKuxR5kyg27IxmXrQWy_4HM63kXk; Path=/; HttpOnly; Secure"
+                },
+                {
+                  "key": "Set-Cookie",
+                  "value": "refreshToken=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTg3N2FkOWU1ODJlNjA1ZmJmNDhlZjgiLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc3MDQ4NjY1OCwiZXhwIjoxNzcxMDkxNDU4fQ.jcfCJibt2APulJYd9GNsP4vhbB47MFiQvYmeXl5zRSM; Path=/; HttpOnly; Secure"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "932"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"3a4-OtUTRZhbZHKHTIBamrU2o3hGg7w\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 07 Feb 2026 17:50:58 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"data\": {\n        \"user\": {\n            \"_id\": \"69877ad9e582e605fbf48ef8\",\n            \"name\": \"ten\",\n            \"email\": \"ten@ten.com\",\n            \"role\": \"STUDENT\",\n            \"college\": \"CCSIT\",\n            \"collegeId\": \"697eed8849cdfdf91a332059\",\n            \"enrollment\": \"TCA2309210\",\n            \"isActive\": true,\n            \"isEmailVerified\": false,\n            \"createdAt\": \"2026-02-07T17:48:09.223Z\",\n            \"updatedAt\": \"2026-02-07T17:50:58.212Z\",\n            \"__v\": 0\n        },\n        \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTg3N2FkOWU1ODJlNjA1ZmJmNDhlZjgiLCJyb2xlIjoiU1RVREVOVCIsImNvbGxlZ2UiOiJDQ1NJVCIsIm5hbWUiOiJ0ZW4iLCJlbWFpbCI6InRlbkB0ZW4uY29tIiwiY29sbGVnZUlkIjoiNjk3ZWVkODg0OWNkZmRmOTFhMzMyMDU5IiwiaWF0IjoxNzcwNDg2NjU4LCJleHAiOjE3NzEwOTE0NTh9.sMdFfIAu9gZ9dyQtKuxR5kyg27IxmXrQWy_4HM63kXk\",\n        \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2OTg3N2FkOWU1ODJlNjA1ZmJmNDhlZjgiLCJyb2xlIjoiU1RVREVOVCIsImlhdCI6MTc3MDQ4NjY1OCwiZXhwIjoxNzcxMDkxNDU4fQ.jcfCJibt2APulJYd9GNsP4vhbB47MFiQvYmeXl5zRSM\"\n    },\n    \"message\": \"User Logged In Successfully\",\n    \"success\": true\n}"
+            }
+          ]
+        },
+        {
+          "name": "get-current-user",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": [
+            {
+              "name": "get-current-user",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{SCMS}}/auth/current-user",
+                  "host": [
+                    "{{SCMS}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "current-user"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "http://localhost:5173"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Origin"
+                },
+                {
+                  "key": "Access-Control-Allow-Credentials",
+                  "value": "true"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "381"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"17d-ri2mRFBpCj2YZVdRiDkxwp+zk9A\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 07 Feb 2026 17:52:30 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"data\": {\n        \"_id\": \"69877ad9e582e605fbf48ef8\",\n        \"name\": \"ten\",\n        \"email\": \"ten@ten.com\",\n        \"role\": \"STUDENT\",\n        \"college\": \"CCSIT\",\n        \"collegeId\": \"697eed8849cdfdf91a332059\",\n        \"enrollment\": \"TCA2309210\",\n        \"isActive\": true,\n        \"isEmailVerified\": true,\n        \"createdAt\": \"2026-02-07T17:48:09.223Z\",\n        \"updatedAt\": \"2026-02-07T17:51:50.134Z\",\n        \"__v\": 0\n    },\n    \"message\": \"Current User Fetched Successfully\",\n    \"success\": true\n}"
+            }
+          ]
+        },
+        {
+          "name": "Forgot-pass-req",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": [
+            {
+              "name": "Forgot-pass-req",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\":\"ten@ten.com\",\r\n    \"enrollment\":\"TCa2309210\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{SCMS}}/auth/forgot-password",
+                  "host": [
+                    "{{SCMS}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "forgot-password"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "http://localhost:5173"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Origin"
+                },
+                {
+                  "key": "Access-Control-Allow-Credentials",
+                  "value": "true"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "90"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"5a-V+OBL6x+HZyBYeD+OYSJjAP7Z5U\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 07 Feb 2026 17:55:15 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"data\": {},\n    \"message\": \"Password Reset link email is sent \",\n    \"success\": true\n}"
+            }
+          ]
+        },
+        {
+          "name": "reset-password-after forgot email link",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": [
+            {
+              "name": "reset-password-after forgot email link",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"newPassword\":\"789456\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{SCMS}}/auth/reset-password/4680b2b2fe1d44b4e2b5cb7fadb235e7b04e6539e38f9df5e3ab3ac2a9ba14db",
+                  "host": [
+                    "{{SCMS}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "reset-password",
+                    "4680b2b2fe1d44b4e2b5cb7fadb235e7b04e6539e38f9df5e3ab3ac2a9ba14db"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "http://localhost:5173"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Origin"
+                },
+                {
+                  "key": "Access-Control-Allow-Credentials",
+                  "value": "true"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "83"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"53-Fs53hdrlMrD37vZ/ZF6wvU9gNko\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 07 Feb 2026 17:57:50 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"data\": {},\n    \"message\": \"Password Reset Successfully\",\n    \"success\": true\n}"
+            }
+          ]
+        },
+        {
+          "name": "resend-email-verification",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": [
+            {
+              "name": "resend-email-verification",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{SCMS}}/auth/resend-email-verification",
+                  "host": [
+                    "{{SCMS}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "resend-email-verification"
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "http://localhost:5173"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Origin"
+                },
+                {
+                  "key": "Access-Control-Allow-Credentials",
+                  "value": "true"
+                },
+                {
+                  "key": "Content-Security-Policy",
+                  "value": "default-src 'none'"
+                },
+                {
+                  "key": "X-Content-Type-Options",
+                  "value": "nosniff"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "text/html; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "345"
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 07 Feb 2026 17:59:27 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "<!DOCTYPE html>\n<html lang=\"en\">\n    <head>\n        <meta charset=\"utf-8\">\n        <title>Error</title>\n    </head>\n    <body>\n        <pre>Error: User is already verified\n            <br> &nbsp; &nbsp;at file:///D:/SCMS/SCMS-Backend/src/Controllers/auth.controller.js:137:15\n            <br> &nbsp; &nbsp;at process.processTicksAndRejections (node:internal/process/task_queues:105:5)\n        </pre>\n    </body>\n</html>"
+            }
+          ]
+        },
+        {
+          "name": "change-password",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": [
+            {
+              "name": "change-password",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"password\":\"789456\",\r\n    \"newPassword\":\"123456\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{SCMS}}/auth/change-password",
+                  "host": [
+                    "{{SCMS}}"
+                  ],
+                  "path": [
+                    "auth",
+                    "change-password"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "http://localhost:5173"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Origin"
+                },
+                {
+                  "key": "Access-Control-Allow-Credentials",
+                  "value": "true"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "85"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"55-OwHk6iGdk7So5dHsFNsA7r4wMDk\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 07 Feb 2026 18:12:49 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"data\": {},\n    \"message\": \"Password changed Successfully\",\n    \"success\": true\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Complain",
+      "item": [
+        {
+          "name": "New Request",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": [
+            {
+              "name": "New Request",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"title\": \"Water leakage in Block A\",\r\n  \"description\": \"Water is leaking near classroom 204\",\r\n  \r\n  \"category\": \"INFRASTRUCTURE\",\r\n  \"isAnonymous\": false,\r\n  \"eligibleforVote\": true\r\n  \r\n}\r\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{SCMS}}/complain/create",
+                  "host": [
+                    "{{SCMS}}"
+                  ],
+                  "path": [
+                    "complain",
+                    "create"
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "http://localhost:5173"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Origin"
+                },
+                {
+                  "key": "Access-Control-Allow-Credentials",
+                  "value": "true"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "552"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"228-lgqxoIFrYhHBDcViJVKCLGiaUuk\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 07 Feb 2026 18:18:13 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 201,\n    \"data\": {\n        \"title\": \"Water leakage in Block A\",\n        \"description\": \"Water is leaking near classroom 204\",\n        \"category\": \"INFRASTRUCTURE\",\n        \"status\": \"OPEN\",\n        \"priorityScore\": 0,\n        \"priority\": \"low\",\n        \"isAnonymous\": false,\n        \"createdBy\": \"69877ad9e582e605fbf48ef8\",\n        \"collegeId\": \"697eed8849cdfdf91a332059\",\n        \"voteCount\": 0,\n        \"eligibleforVote\": true,\n        \"reassignmentRequested\": false,\n        \"_id\": \"698781dfb028cd7ddd90ed78\",\n        \"attachments\": [],\n        \"createdAt\": \"2026-02-07T18:18:07.809Z\",\n        \"updatedAt\": \"2026-02-07T18:18:07.809Z\",\n        \"__v\": 0\n    },\n    \"message\": \"Complaint created successfully\",\n    \"success\": true\n}"
+            }
+          ]
+        },
+        {
+          "name": "Add media",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": [
+            {
+              "name": "Add media",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "file",
+                      "type": "file",
+                      "uuid": "1d3ff0c6-9ef9-45d2-9d36-2e30897c8525",
+                      "src": "/C:/Users/vansh/OneDrive/Pictures/Saved Pictures/Screenshot 2023-08-09 205324.jpg"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{SCMS}}/complain/698781dfb028cd7ddd90ed78/media",
+                  "host": [
+                    "{{SCMS}}"
+                  ],
+                  "path": [
+                    "complain",
+                    "698781dfb028cd7ddd90ed78",
+                    "media"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "http://localhost:5173"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Origin"
+                },
+                {
+                  "key": "Access-Control-Allow-Credentials",
+                  "value": "true"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "312"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"138-xPMJUOW7AzJygqkYBXVAUr0nKo0\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 07 Feb 2026 18:26:14 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"data\": [\n        {\n            \"url\": \"https://res.cloudinary.com/dir9q7cmt/image/upload/v1770488815/scms/complaints/698781dfb028cd7ddd90ed78/m6ifkeg8b3t9apxj9apb.jpg\",\n            \"fileType\": \"IMAGE\",\n            \"_id\": \"698783c64bb8cd81b980cee7\",\n            \"uploadedAt\": \"2026-02-07T18:26:14.559Z\"\n        }\n    ],\n    \"message\": \"Media uploaded successfully\",\n    \"success\": true\n}"
+            }
+          ]
+        },
+        {
+          "name": "get-complain",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": [
+            {
+              "name": "get-complain",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{SCMS}}/complain/",
+                  "host": [
+                    "{{SCMS}}"
+                  ],
+                  "path": [
+                    "complain",
+                    ""
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "http://localhost:5173"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Origin"
+                },
+                {
+                  "key": "Access-Control-Allow-Credentials",
+                  "value": "true"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "2239"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"8bf-TUShjeh8+Jvn6ymOJ2dUTJ53J8g\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 07 Feb 2026 18:27:37 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"data\": {\n        \"count\": 4,\n        \"complaints\": [\n            {\n                \"_id\": \"698781dfb028cd7ddd90ed78\",\n                \"title\": \"Water leakage in Block A\",\n                \"description\": \"Water is leaking near classroom 204\",\n                \"category\": \"INFRASTRUCTURE\",\n                \"status\": \"OPEN\",\n                \"priorityScore\": 0,\n                \"priority\": \"low\",\n                \"isAnonymous\": false,\n                \"createdBy\": \"69877ad9e582e605fbf48ef8\",\n                \"collegeId\": \"697eed8849cdfdf91a332059\",\n                \"voteCount\": 0,\n                \"eligibleforVote\": true,\n                \"reassignmentRequested\": false,\n                \"attachments\": [\n                    {\n                        \"url\": \"https://res.cloudinary.com/dir9q7cmt/image/upload/v1770488815/scms/complaints/698781dfb028cd7ddd90ed78/m6ifkeg8b3t9apxj9apb.jpg\",\n                        \"fileType\": \"IMAGE\",\n                        \"_id\": \"698783c64bb8cd81b980cee7\",\n                        \"uploadedAt\": \"2026-02-07T18:26:14.559Z\"\n                    }\n                ],\n                \"createdAt\": \"2026-02-07T18:18:07.809Z\",\n                \"updatedAt\": \"2026-02-07T18:26:14.564Z\"\n            },\n            {\n                \"_id\": \"698781c9b028cd7ddd90ed75\",\n                \"title\": \"Water leakage in Block A\",\n                \"description\": \"Water is leaking near classroom 204\",\n                \"category\": \"INFRASTRUCTURE\",\n                \"status\": \"OPEN\",\n                \"priorityScore\": 0,\n                \"priority\": \"low\",\n                \"isAnonymous\": false,\n                \"createdBy\": \"69877ad9e582e605fbf48ef8\",\n                \"collegeId\": \"697eed8849cdfdf91a332059\",\n                \"voteCount\": 0,\n                \"eligibleforVote\": true,\n                \"reassignmentRequested\": false,\n                \"attachments\": [],\n                \"createdAt\": \"2026-02-07T18:17:45.743Z\",\n                \"updatedAt\": \"2026-02-07T18:17:45.743Z\"\n            },\n            {\n                \"reassignmentRequested\": false,\n                \"_id\": \"6985febdeb9b87354a694612\",\n                \"title\": \"Broken classroom projector\",\n                \"description\": \"The projector in room 204 has not been working for two weeks\",\n                \"category\": \"INFRASTRUCTURE\",\n                \"status\": \"OPEN\",\n                \"priorityScore\": 0,\n                \"priority\": \"low\",\n                \"isAnonymous\": false,\n                \"createdBy\": \"6985fda1eb9b87354a6945fa\",\n                \"collegeId\": \"697eed8849cdfdf91a332059\",\n                \"voteCount\": 0,\n                \"eligibleforVote\": true,\n                \"attachments\": [],\n                \"createdAt\": \"2026-02-06T14:46:21.891Z\",\n                \"updatedAt\": \"2026-02-06T14:46:21.891Z\"\n            },\n            {\n                \"reassignmentRequested\": false,\n                \"_id\": \"6985fe92eb9b87354a69460f\",\n                \"title\": \"Broken classroom projector\",\n                \"description\": \"The projector in room 204 has not been working for two weeks\",\n                \"category\": \"INFRASTRUCTURE\",\n                \"status\": \"OPEN\",\n                \"priorityScore\": 0,\n                \"priority\": \"low\",\n                \"isAnonymous\": false,\n                \"createdBy\": \"6985fda1eb9b87354a6945fa\",\n                \"collegeId\": \"697eed8849cdfdf91a332059\",\n                \"voteCount\": 0,\n                \"eligibleforVote\": false,\n                \"attachments\": [],\n                \"createdAt\": \"2026-02-06T14:45:38.476Z\",\n                \"updatedAt\": \"2026-02-06T14:45:38.476Z\"\n            }\n        ]\n    },\n    \"message\": \"Complaints fetched successfully\",\n    \"success\": true\n}"
+            }
+          ]
+        },
+        {
+          "name": "voteable",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": [
+            {
+              "name": "voteable",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{SCMS}}/complain/voteable",
+                  "host": [
+                    "{{SCMS}}"
+                  ],
+                  "path": [
+                    "complain",
+                    "voteable"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "http://localhost:5173"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Origin"
+                },
+                {
+                  "key": "Access-Control-Allow-Credentials",
+                  "value": "true"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "556"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"22c-y4QMvdNuGQ+Nem+QOFyqXlp4wSs\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 07 Feb 2026 18:34:55 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"data\": [\n        {\n            \"_id\": \"698781dfb028cd7ddd90ed78\",\n            \"title\": \"Water leakage in Block A\",\n            \"category\": \"INFRASTRUCTURE\",\n            \"status\": \"OPEN\",\n            \"createdAt\": \"2026-02-07T18:18:07.809Z\"\n        },\n        {\n            \"_id\": \"698781c9b028cd7ddd90ed75\",\n            \"title\": \"Water leakage in Block A\",\n            \"category\": \"INFRASTRUCTURE\",\n            \"status\": \"OPEN\",\n            \"createdAt\": \"2026-02-07T18:17:45.743Z\"\n        },\n        {\n            \"_id\": \"6985febdeb9b87354a694612\",\n            \"title\": \"Broken classroom projector\",\n            \"category\": \"INFRASTRUCTURE\",\n            \"status\": \"OPEN\",\n            \"createdAt\": \"2026-02-06T14:46:21.891Z\"\n        }\n    ],\n    \"message\": \"Voteable complaints fetched successfully\",\n    \"success\": true\n}"
+            }
+          ]
+        },
+        {
+          "name": "vote-on-complain",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": [
+            {
+              "name": "vote-on-complain",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{SCMS}}/complain/vote/698781c9b028cd7ddd90ed75/vote",
+                  "host": [
+                    "{{SCMS}}"
+                  ],
+                  "path": [
+                    "complain",
+                    "vote",
+                    "698781c9b028cd7ddd90ed75",
+                    "vote"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "X-Powered-By",
+                  "value": "Express"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "http://localhost:5173"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Origin"
+                },
+                {
+                  "key": "Access-Control-Allow-Credentials",
+                  "value": "true"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                },
+                {
+                  "key": "Content-Length",
+                  "value": "86"
+                },
+                {
+                  "key": "ETag",
+                  "value": "W/\"56-p3sx7M/1LoS1eC8Au82eyN5l9w8\""
+                },
+                {
+                  "key": "Date",
+                  "value": "Sat, 07 Feb 2026 18:42:21 GMT"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Keep-Alive",
+                  "value": "timeout=5"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"statusCode\": 200,\n    \"data\": null,\n    \"message\": \"Vote registered successfully\",\n    \"success\": true\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "healthcheck",
+      "request": {
+        "method": "GET",
+        "header": []
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "SCMS",
+      "value": "",
+      "type": "default"
+    }
+  ]
+}

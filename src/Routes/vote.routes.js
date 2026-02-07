@@ -6,14 +6,14 @@ const router = Router();
 
 // vote
 router.post(
-  "/:complaintId/vote",
+  "/:id/vote",
   verifyJWT,
   voteOnComplaint
 );
 
 // remove vote
 router.delete(
-  "/:complaintId/vote",
+  "/:id/vote",
   verifyJWT,
   removeVote
 );

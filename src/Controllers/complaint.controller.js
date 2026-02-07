@@ -209,27 +209,46 @@ export const getComplaintById = asynchandler(async (req, res) => {
 //     );
 // });
 
+// export const getVoteableComplaints = asynchandler(async (req, res) => {
+//   const complaints = await Complaint.find({
+//     eligibleForVote: true,
+//     status: { $ne: "RESOLVED" }
+//   })
+//     .select("title category votes status createdAt")
+//     .sort({ createdAt: -1 });
+
+//   if (!complaints || complaints.length === 0) {
+//     throw new ApiError(404, "No voteable complaints found");
+//   }
+
+//   return res.status(200).json(
+//     new ApiResponse(
+//       200,
+//       complaints,
+//       "Voteable complaints fetched successfully"
+//     )
+//   );
+// });
+
 export const getVoteableComplaints = asynchandler(async (req, res) => {
+
   const complaints = await Complaint.find({
-    eligibleForVote: true,
-    status: { $ne: "RESOLVED" }
+    eligibleforVote: true,
+    status: { $nin: ["RESOLVED", "REJECTED"] }
   })
     .select("title category votes status createdAt")
     .sort({ createdAt: -1 });
-
-  if (!complaints || complaints.length === 0) {
-    throw new ApiError(404, "No voteable complaints found");
-  }
 
   return res.status(200).json(
     new ApiResponse(
       200,
       complaints,
-      "Voteable complaints fetched successfully"
+      complaints.length
+        ? "Voteable complaints fetched successfully"
+        : "No voteable complaints available"
     )
   );
 });
-
 
 export const getComplaintStatusById = asynchandler(async (req, res) => {
   const { id } = req.params;

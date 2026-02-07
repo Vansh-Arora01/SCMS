@@ -13,9 +13,10 @@ export const uploadComplaintMedia = asynchandler(async (req, res) => {
   }
 
   // Tenant isolation
-  if (complaint.collegeId !== req.user.collegeId) {
-    throw new ApiError(403, "Access denied");
-  }
+  if (complaint.collegeId.toString() !== req.user.collegeId.toString()) {
+  throw new ApiError(403, "Access denied");
+}
+
 
   // Prevent uploads after resolution
   if (["RESOLVED", "REJECTED"].includes(complaint.status)) {

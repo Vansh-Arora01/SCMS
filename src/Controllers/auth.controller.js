@@ -170,52 +170,113 @@ const resendEmailVerification = asynchandler(async (req, res) => {
 
 
 
-const  login = asynchandler(async(req,res)=>{
-    const {name,email,password,role,enrollment}= req.body
-    if(!email){
-        throw new ApiError(400,"Email is required ")
+// const  login = asynchandler(async(req,res)=>{
+//     const {name,email,password,role,enrollment}= req.body
+//     if(!email){
+//         throw new ApiError(400,"Email is required ")
+//     }
+//     if(!enrollment){
+//         throw new ApiError(400,"Enrollment is required ")
+//     }
+//     const user = await User.findOne({ enrollment, email })
+// .select("+password");
+
+//     if(!user){
+//         throw new ApiError(400,"User Doenot Exists")
+//     }
+//     const isPasswordValid = await user.isPasswordCorrect(password)
+
+//     if(!isPasswordValid){
+//         throw new ApiError(402,"Password is Wrong")
+//     }
+
+//     const {accessToken, refreshToken}= await generateAccessandRefreshToken(user._id)
+//     const loggedInUser = await User.findById(user._id).select("-password -refreshToken -emailVerificationToken -emailVerificationExpiry",);
+
+
+
+//     const options ={
+//         httpOnly:true,
+//         secure : true,
+//     }
+
+//     return res 
+//     .status(200)
+//     .cookie("accessToken",accessToken,options)
+//     .cookie("refreshToken",refreshToken,options)
+//     .json(
+//         new ApiResponse(
+//             200,
+//             {
+//                 user:loggedInUser,
+//                 accessToken,
+//                 refreshToken
+//             },
+//             "User Logged In Successfully"
+//         )
+//     )
+
+// })
+const login = asynchandler(async (req, res) => {
+
+    const { email, password, enrollment } = req.body;
+
+    if (!email) {
+        throw new ApiError(400, "Email is required");
     }
-    if(!enrollment){
-        throw new ApiError(400,"Enrollment is required ")
-    }
-    const user = await User.findOne({enrollment})
 
-    if(!user){
-        throw new ApiError(400,"User Doenot Exists")
-    }
-    const isPasswordValid = await user.isPasswordCorrect(password)
-
-    if(!isPasswordValid){
-        throw new ApiError(402,"Password is Wrong")
+    if (!enrollment) {
+        throw new ApiError(400, "Enrollment is required");
     }
 
-    const {accessToken, refreshToken}= await generateAccessandRefreshToken(user._id)
-    const loggedInUser = await User.findById(user._id).select("-password -refreshToken -emailVerificationToken -emailVerificationExpiry",);
-
-
-
-    const options ={
-        httpOnly:true,
-        secure : true,
+    if (!password) {
+        throw new ApiError(400, "Password is required");
     }
 
-    return res 
-    .status(200)
-    .cookie("accessToken",accessToken,options)
-    .cookie("refreshToken",refreshToken,options)
-    .json(
-        new ApiResponse(
-            200,
-            {
-                user:loggedInUser,
-                accessToken,
-                refreshToken
-            },
-            "User Logged In Successfully"
-        )
-    )
+    const user = await User.findOne({ enrollment, email }).select("+password");
 
-})
+    if (!user) {
+        throw new ApiError(400, "User Does Not Exist");
+    }
+    console.log("REQ BODY:", req.body);
+console.log("Entered Password:", password);
+console.log("Stored Password:", user?.password);
+
+
+    const isPasswordValid = await user.isPasswordCorrect(password);
+
+    if (!isPasswordValid) {
+        throw new ApiError(401, "Password is Wrong");
+    }
+
+    const { accessToken, refreshToken } = 
+        await generateAccessandRefreshToken(user._id);
+
+    const loggedInUser = await User.findById(user._id)
+        .select("-password -refreshToken -emailVerificationToken -emailVerificationExpiry");
+
+    const options = {
+        httpOnly: true,
+        secure: true,
+    };
+
+    return res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", refreshToken, options)
+        .json(
+            new ApiResponse(
+                200,
+                {
+                    user: loggedInUser,
+                    accessToken,
+                    refreshToken
+                },
+                "User Logged In Successfully"
+            )
+        );
+});
+
 
 
 
@@ -254,10 +315,10 @@ const getCurrentUser = asynchandler(async (req, res) => {
 
 const changeCurrentPassword = asynchandler(async(req,res)=>{
 
-     const {oldPassword,newPassword} = req.body
+     const {password,newPassword} = req.body
      const user = await User.findById(req.user?._id);
 
-     const isPasswordValid = user.isPasswordCorrect(oldPassword)
+     const isPasswordValid = user.isPasswordCorrect(password)
 
      if(!isPasswordValid){
         throw new ApiError(400,"Invalid Old Password")
@@ -281,9 +342,9 @@ const changeCurrentPassword = asynchandler(async(req,res)=>{
 
 
 const forgotPasswordRequest = asynchandler(async(req,res)=>{
-  const {email}=  req.body
+  const {email,enrollment}=  req.body
 
- const user= await User.findOne({email})
+ const user= await User.findOne({enrollment})
 
  if(!user){
     throw new ApiError(404,"User doen't exists")
