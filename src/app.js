@@ -67,6 +67,6 @@ app.use('/api/v1/admin',adminRoutes)
 app.use('/api/v1/staff',staffRoutes)
 
 
-app.use("/api/v1/notification",notificationRoutes)
+app.use("/api/v1/notifications",notificationRoutes)
 
 export default app;

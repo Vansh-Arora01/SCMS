@@ -257,7 +257,9 @@ console.log("Stored Password:", user?.password);
 
     const options = {
         httpOnly: true,
-        secure: true,
+        secure: false,
+        sameSite: "lax",    // ❗ NOT "none" on localhost
+  path: "/"
     };
 
     return res
