@@ -4,6 +4,8 @@ import {ApiError} from "../Utils/apierror.js";
 import {User} from "../Models/User.model.js"
 import { Complaint } from "../Models/Complain.model.js";
 import {validateStatusTransition} from "../Middlewares/complaint.middleware.js"
+import { sendEmail } from "../Utils/mail.js";
+import {complaintLifecycleMailgenContent} from "../mails/tempelates/ComplainStatus.js"
 
 export const changeComplaintStatus = async ({
   complaintId,
@@ -60,7 +62,7 @@ export const changeComplaintStatus = async ({
       email: complaint.createdBy.email,
       subject: `Complaint ${status}`,
       mailgenContent: complaintLifecycleMailgenContent({
-        username: complaint.createdBy.username,
+        username: complaint.createdBy.name,
         complaintId: complaint._id,
         event: status,
         remarks: resolutionNote || ""
