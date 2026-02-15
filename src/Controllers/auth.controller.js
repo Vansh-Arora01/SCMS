@@ -26,7 +26,7 @@ const generateAccessandRefreshToken= async(userId)=>{
 
 
 const registerUser= asynchandler(async(req,res,next)=>{
-    const {name,email,password,college,role,enrollment}= req.body;
+    const {name,email,password,college,role,enrollment,department}= req.body;
     const existingUser= await User.findOne({email});
     if(existingUser){
         return next(new ApiError(400,"User with this email already exists"));
@@ -35,6 +35,9 @@ const registerUser= asynchandler(async(req,res,next)=>{
   if (!collegeDoc) {
     throw new ApiError(400, "Invalid college selected");
   }   
+  if (role === "STAFF" && !department) {
+   throw new ApiError(400, "Department is required for staff");
+}
     
     const user = await User.create({
         name,
@@ -44,6 +47,7 @@ const registerUser= asynchandler(async(req,res,next)=>{
     collegeId: collegeDoc._id ,
         role,
         enrollment,
+        department,
     });
 
 const {unhashedToken,hashedToken,tokenExpiry}= user.generateTemporaryToken();
@@ -257,9 +261,10 @@ console.log("Stored Password:", user?.password);
 
     const options = {
         httpOnly: true,
-        secure: false,
-        sameSite: "lax",    // ❗ NOT "none" on localhost
-  path: "/"
+        secure: true,
+        // sameSite: "lax",    // ❗ NOT "none" on localhost
+        sameSite: "none",    
+  
     };
 
     return res
