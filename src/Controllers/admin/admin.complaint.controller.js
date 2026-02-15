@@ -8,8 +8,12 @@ import { createNotification } from "../../services/notification.service.js";
 export const getUnassignedComplaints = asynchandler(async (req, res) => {
   const complaints = await Complaint.find({
     collegeId: req.user.collegeId,
-    assignedTo: null,
-    status: "PENDING"
+    status: "OPEN",
+     $or: [
+    { assignedTo: null },
+    { assignedTo: { $exists: false } }
+  ],
+    
   }).populate("createdBy", "name email enrollment");
 
   res.status(200).json(
@@ -19,7 +23,22 @@ export const getUnassignedComplaints = asynchandler(async (req, res) => {
 
 
 export const assignComplaint = asynchandler(async (req, res) => {
+
+  if (req.user.role !== "ADMIN") {
+    throw new ApiError(403, "Only admin can assign complaints");
+  }
+
   const { assignedTo } = req.body;
+
+  const staff = await User.findById(assignedTo);
+
+  if (!staff || staff.role !== "STAFF") {
+    throw new ApiError(400, "Invalid staff");
+  }
+
+  if (staff.collegeId !== req.user.collegeId) {
+    throw new ApiError(403, "Staff not in same college");
+  }
 
   const complaint = await changeComplaintStatus({
     complaintId: req.params.id,
@@ -28,8 +47,6 @@ export const assignComplaint = asynchandler(async (req, res) => {
     user: req.user
   });
 
-  
- // notification one 
   await createNotification({
     userId: assignedTo,
     role: "STAFF",
@@ -42,6 +59,7 @@ export const assignComplaint = asynchandler(async (req, res) => {
     new ApiResponse(200, complaint, "Complaint assigned successfully")
   );
 });
+
 
 
 // reassigning 
@@ -83,7 +101,7 @@ export const getComplaintsSortedByDepartment = asynchandler(async (req, res) => 
     {
       title: 1,
       description: 1,
-      department: 1,     // or category (use what you have)
+      category: 1,   // ✅ fixed
       status: 1,
       priority: 1,
       assignedTo: 1,
@@ -92,14 +110,14 @@ export const getComplaintsSortedByDepartment = asynchandler(async (req, res) => 
   )
     .populate("createdBy", "name email enrollment")
     .populate("assignedTo", "name email role enrollment")
-    .sort({ department: 1, createdAt: -1 }); 
-    // department A→Z, latest first inside department
+    .sort({ category: 1, createdAt: -1 });  // ✅ fixed
 
   res.status(200).json(
     new ApiResponse(
       200,
       complaints,
-      "Complaints fetched and sorted by department"
+      "Complaints fetched and sorted by category"
     )
   );
 });
+
