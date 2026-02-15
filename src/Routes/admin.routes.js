@@ -66,5 +66,13 @@ router.get(
   getComplaintsSortedByDepartment
 );
 
+router.get(
+  "/category-wise",
+  verifyJWT,
+  allowRoles("ADMIN","SUPER_ADMIN"),
+  getComplaintsCategoryWise
+);
+
+
 
 export default router;

@@ -22,36 +22,89 @@ export const getUnassignedComplaints = asynchandler(async (req, res) => {
 });
 
 
+// export const assignComplaint = asynchandler(async (req, res) => {
+
+//   if (req.user.role !== "ADMIN") {
+//     throw new ApiError(403, "Only admin can assign complaints");
+//   }
+
+//   const { assignedTo } = req.body;
+
+//   const staff = await User.findById(assignedTo);
+
+//   if (!staff || staff.role !== "STAFF") {
+//     throw new ApiError(400, "Invalid staff");
+//   }
+
+//   if (staff.collegeId !== req.user.collegeId) {
+//     throw new ApiError(403, "Staff not in same college");
+//   }
+
+//   const complaint = await changeComplaintStatus({
+//     complaintId: req.params.id,
+//     status: "ASSIGNED",
+//     assignedTo,
+//     user: req.user
+//   });
+
+//   await createNotification({
+//     userId: assignedTo,
+//     role: "STAFF",
+//     title: "New Complaint Assigned",
+//     message: `Complaint #${complaint.complaintNumber} assigned to you`,
+//     complaintId: complaint._id
+//   });
+
+//   res.status(200).json(
+//     new ApiResponse(200, complaint, "Complaint assigned successfully")
+//   );
+// });
+
+
+
+// reassigning 
+
 export const assignComplaint = asynchandler(async (req, res) => {
 
   if (req.user.role !== "ADMIN") {
     throw new ApiError(403, "Only admin can assign complaints");
   }
 
-  const { assignedTo } = req.body;
+  const { enrollment, name } = req.body;
 
-  const staff = await User.findById(assignedTo);
-
-  if (!staff || staff.role !== "STAFF") {
-    throw new ApiError(400, "Invalid staff");
+  // ✅ Enrollment compulsory
+  if (!enrollment) {
+    throw new ApiError(400, "Staff enrollment is required");
   }
 
-  if (staff.collegeId !== req.user.collegeId) {
-    throw new ApiError(403, "Staff not in same college");
+  // 🔎 Find staff by enrollment + role + college
+  const staff = await User.findOne({
+    enrollment,
+    role: "STAFF",
+    collegeId: req.user.collegeId
+  });
+
+  if (!staff) {
+    throw new ApiError(404, "Staff not found with this enrollment");
+  }
+
+  // ✅ Optional name verification (extra safety)
+  if (name && staff.name !== name) {
+    throw new ApiError(400, "Name does not match enrollment");
   }
 
   const complaint = await changeComplaintStatus({
     complaintId: req.params.id,
     status: "ASSIGNED",
-    assignedTo,
+    assignedTo: staff._id,
     user: req.user
   });
 
   await createNotification({
-    userId: assignedTo,
+    userId: staff._id,
     role: "STAFF",
     title: "New Complaint Assigned",
-    message: `Complaint #${complaint.complaintNumber} assigned to you`,
+    message: `Complaint assigned to you`,
     complaintId: complaint._id
   });
 
@@ -59,10 +112,6 @@ export const assignComplaint = asynchandler(async (req, res) => {
     new ApiResponse(200, complaint, "Complaint assigned successfully")
   );
 });
-
-
-
-// reassigning 
 
 export const reassignComplaint = asynchandler(async (req, res) => {
   const { assignedTo } = req.body;
@@ -121,3 +170,20 @@ export const getComplaintsSortedByDepartment = asynchandler(async (req, res) => 
   );
 });
 
+export const getComplaintsCategoryWise = asynchandler(async (req, res) => {
+
+  const complaints = await Complaint.find({
+    collegeId: req.user.collegeId
+  })
+    .populate("createdBy", "name email enrollment role")
+    .populate("assignedTo", "name email role enrollment")
+    .sort({ category: 1, createdAt: -1 });
+
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      complaints,
+      "Complaints fetched category-wise sorted"
+    )
+  );
+});
