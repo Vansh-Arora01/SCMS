@@ -108,6 +108,7 @@ export const getStaffProfile = asynchandler(async (req, res) => {
       name: req.user.name,
       email: req.user.email,
       role: req.user.role,
+      department: req.user.department,
       collegeId: req.user.collegeId,
       createdAt: req.user.createdAt
     }, "Staff profile fetched successfully")
