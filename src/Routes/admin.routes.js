@@ -1,7 +1,7 @@
 import express from "express";
 import { verifyJWT } from "../Middlewares/Auth.middleware.js";
 import { allowRoles } from "../Middlewares/role.middleware.js";
-import {getUnassignedComplaints,assignComplaint,reassignComplaint,getComplaintsSortedByDepartment} from "../Controllers/admin/admin.complaint.controller.js"
+import {getUnassignedComplaints,assignComplaint,reassignComplaint,getComplaintsSortedByDepartment,getComplaintsCategoryWise} from "../Controllers/admin/admin.complaint.controller.js"
 import {createStaff,deleteStaff,getAdminProfile} from "../Controllers/admin/admin.staff.controller.js"
 
 const router = express.Router();
