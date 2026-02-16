@@ -8,7 +8,7 @@ import {
   getComplaintStatusById,
   deleteComplaint
 } from "../Controllers/complaint.controller.js";
-
+import { voteOnComplaint, removeVote } from "../Controllers/vote.controller.js";
 import { verifyJWT } from "../Middlewares/Auth.middleware.js";
 import { allowRoles } from "../Middlewares/role.middleware.js";
 
@@ -64,6 +64,10 @@ router.get(
 // 2 updated routers 
 router.get("/voteable",verifyJWT,getVoteableComplaints)
 router.get("/status/:id", verifyJWT, getComplaintStatusById);
+
+// Vote routes
+router.post("/vote/:id", verifyJWT, voteOnComplaint);
+router.post("/unvote/:id", verifyJWT, removeVote);
 
 // delete one for admin
 router.delete(

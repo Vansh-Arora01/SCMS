@@ -27,7 +27,9 @@ const generateAccessandRefreshToken= async(userId)=>{
 
 const registerUser= asynchandler(async(req,res,next)=>{
     const {name,email,password,college,role,enrollment,department}= req.body;
-    const existingUser= await User.findOne({email});
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedEnrollment = enrollment.trim().toUpperCase();
+    const existingUser= await User.findOne({email: normalizedEmail});
     if(existingUser){
         return next(new ApiError(400,"User with this email already exists"));
     }    
@@ -41,12 +43,12 @@ const registerUser= asynchandler(async(req,res,next)=>{
     
     const user = await User.create({
         name,
-        email,
+       email: normalizedEmail,
         password,
          college: collegeDoc.name,      // optional
     collegeId: collegeDoc._id ,
         role,
-        enrollment,
+      enrollment: normalizedEnrollment,
         department,
     });
 
@@ -236,15 +238,35 @@ const login = asynchandler(async (req, res) => {
     if (!password) {
         throw new ApiError(400, "Password is required");
     }
-
-    const user = await User.findOne({ enrollment, email }).select("+password");
+     // Normalize inputs: trim whitespace and enforce case sensitivity rules
+    const normalizedEmail = email.trim().toLowerCase();
+    const normalizedEnrollment = enrollment.trim().toUpperCase();
+    console.log("Login Attempt:", {
+        original: { email, enrollment },
+        normalized: { normalizedEmail, normalizedEnrollment }
+    });
+     const user = await User.findOne({
+        enrollment: normalizedEnrollment,
+        email: normalizedEmail
+    }).select("+password");
 
     if (!user) {
-        throw new ApiError(400, "User Does Not Exist");
+        // If user not found with both, check individually to give better error message
+        const userByEmail = await User.findOne({ email: normalizedEmail });
+        if (userByEmail) {
+            throw new ApiError(400, "Invalid Enrollment Number");
+        }
+
+        const userByEnrollment = await User.findOne({ enrollment: normalizedEnrollment });
+        if (userByEnrollment) {
+            throw new ApiError(400, "Invalid Email Address");
+        }
+
+        throw new ApiError(404, "User Does Not Exist");
     }
-    console.log("REQ BODY:", req.body);
-console.log("Entered Password:", password);
-console.log("Stored Password:", user?.password);
+    // console.log("REQ BODY:", req.body);
+// console.log("Entered Password:", password);
+// console.log("Stored Password:", user?.password);
 
 
     const isPasswordValid = await user.isPasswordCorrect(password);
@@ -255,6 +277,7 @@ console.log("Stored Password:", user?.password);
 
     const { accessToken, refreshToken } = 
         await generateAccessandRefreshToken(user._id);
+        
 
     const loggedInUser = await User.findById(user._id)
         .select("-password -refreshToken -emailVerificationToken -emailVerificationExpiry");
@@ -293,7 +316,7 @@ const logoutUser = asynchandler(async(req,res)=>{
         req.user._id,
         {
             $set:{
-                refereshToken:""
+                refreshToken:""
             }
         },{new:true},
     );
@@ -325,7 +348,7 @@ const changeCurrentPassword = asynchandler(async(req,res)=>{
      const {password,newPassword} = req.body
      const user = await User.findById(req.user?._id);
 
-     const isPasswordValid = user.isPasswordCorrect(password)
+     const isPasswordValid = await user.isPasswordCorrect(password)
 
      if(!isPasswordValid){
         throw new ApiError(400,"Invalid Old Password")
@@ -349,44 +372,39 @@ const changeCurrentPassword = asynchandler(async(req,res)=>{
 
 
 const forgotPasswordRequest = asynchandler(async(req,res)=>{
-  const {email,enrollment}=  req.body
+  const { email, enrollment } = req.body
 
- const user= await User.findOne({enrollment})
+  const normalizedEnrollment = enrollment.trim().toUpperCase();
 
- if(!user){
+  const user = await User.findOne({ enrollment: normalizedEnrollment })
+
+  if(!user){
     throw new ApiError(404,"User doen't exists")
- }
+  }
 
   const {unhashedToken,hashedToken,tokenExpiry}=user.generateTemporaryToken();
 
-    user.forgotPasswordToken = hashedToken
-    user.forgotPasswordExpiry = tokenExpiry
+  user.forgotPasswordToken = hashedToken
+  user.forgotPasswordExpiry = tokenExpiry
 
-    await user.save({validateBeforeSave:false})
+  await user.save({validateBeforeSave:false})
 
-   await sendEmail({
+  await sendEmail({
         email: user?.email,
         subject: "Password reset Request",
         mailgenContent: forgotPasswordMailgenContent(
             user.username,
-            // GENERATION OF DYNAMIC LINKS
-            // `${process.env.FORGOT_PASSWORD_REDIRECT_URL}/${unhashedToken}`,
-             `${req.protocol}://${req.get("host")}/api/v1/auth/reset-password/${unhashedToken}`
+            `${req.protocol}://${req.get("host")}/api/v1/auth/reset-password/${unhashedToken}`
         ),
+  })
 
-    })
-    return res 
-    .status(200)
-    .json(
+  return res.status(200).json(
         new ApiResponse(
             200,{},"Password Reset link email is sent "
         )
-    )
-
-    
-  
-
+  )
 })
+
 
 
 
@@ -456,7 +474,7 @@ const refreshAccessToken = asynchandler(async(req,res)=>{
     secure:true, 
   }
 
-    const {accessToken,refreshToken:newRefreshToken}=await generateAccessTokenandRefreshToken(user._id)
+    const {accessToken,refreshToken:newRefreshToken}=await generateAccessandRefreshToken(user._id)
     user.refreshToken=newRefreshToken
     await user.save({validateBeforeSave:false})
 

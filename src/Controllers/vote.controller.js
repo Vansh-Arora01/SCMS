@@ -110,7 +110,7 @@ export const voteOnComplaint = asynchandler(async (req, res) => {
 
 /* ---------- REMOVE VOTE (OPTIONAL BUT GOOD) ---------- */
 export const removeVote = asynchandler(async (req, res) => {
-  const { complaintId } = req.params;
+  const { id: complaintId } = req.params;
   const userId = req.user._id;
 
   const vote = await Vote.findOneAndDelete({

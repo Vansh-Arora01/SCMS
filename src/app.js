@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import { errorHandler } from './Middlewares/error.middleware.js';
+
 
 
 const app = express();
@@ -12,7 +14,8 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    oorigin: ["http://localhost:5173", "http://localhost:5175","http://localhost:5174"],
+
     credentials:true,
     methods:["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
     allowedHeaders:["Content-type","Authorization"]
@@ -68,5 +71,9 @@ app.use('/api/v1/staff',staffRoutes)
 
 
 app.use("/api/v1/notifications",notificationRoutes)
+
+
+
+app.use(errorHandler);
 
 export default app;

@@ -10,5 +10,5 @@ export const validateStatusTransition = (currentStatus, newStatus) => {
   return transitions[currentStatus]?.includes(newStatus);
 };
 export const checkComplaintCollege = (complaint, user) => {
-  return complaint.collegeId === user.collegeId;
+  return complaint.collegeId?.toString() === user.collegeId?.toString();
 };

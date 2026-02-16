@@ -1,9 +1,10 @@
 import express from "express";
 
-import {getNotifications,
+import {
+    getNotifications,
     getUnreadCount,
-     markAsRead,
-     markAllAsRead
+    markAsRead,
+    markAllAsRead
 } from "../Controllers/notification.controller.js"
 
 import { verifyJWT } from "../Middlewares/Auth.middleware.js";
@@ -11,8 +12,8 @@ const router = express.Router();
 
 router.get("/", verifyJWT, getNotifications);
 router.get("/unread-count", verifyJWT, getUnreadCount);
-router.patch("/:id/read", verifyJWT, markAsRead);
 router.patch("/read-all", verifyJWT, markAllAsRead);
+router.patch("/:id/read", verifyJWT, markAsRead);
 
 
 
