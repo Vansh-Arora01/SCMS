@@ -1,3 +1,6 @@
 .env
 node_modules
 temp
+# Debug scripts
+debug_colleges.js
+debug_complaint_access.js
