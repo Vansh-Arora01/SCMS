@@ -19,7 +19,8 @@ export const changeComplaintStatus = async ({
 
   if (!complaint) throw new ApiError(404, "Complaint not found");
 
-  if (complaint.collegeId !== user.collegeId)
+  if (!complaint.collegeId.equals(user.collegeId))
+
     throw new ApiError(403, "Unauthorized");
 
   if (["RESOLVED", "REJECTED"].includes(complaint.status))
