@@ -61,20 +61,20 @@ console.log("AssignedTo:", assignedTo);
   await complaint.save();
 
   // Email trigger (single source of truth)
-  // const emailEvents = ["ASSIGNED", "IN_PROGRESS", "RESOLVED", "ESCALATED"];
+  const emailEvents = ["ASSIGNED", "IN_PROGRESS", "RESOLVED", "ESCALATED"];
 
-  // if (emailEvents.includes(status) && complaint.createdBy) {
-  //   await sendEmail({
-  //     email: complaint.createdBy.email,
-  //     subject: `Complaint ${status}`,
-  //     mailgenContent: complaintLifecycleMailgenContent({
-  //       username: complaint.createdBy.name,
-  //       complaintId: complaint._id,
-  //       event: status,
-  //       remarks: resolutionNote || ""
-  //     })
-  //   });
-  // }
+  if (emailEvents.includes(status) && complaint.createdBy) {
+    await sendEmail({
+      email: complaint.createdBy.email,
+      subject: `Complaint ${status}`,
+      mailgenContent: complaintLifecycleMailgenContent({
+        username: complaint.createdBy.name,
+        complaintId: complaint._id,
+        event: status,
+        remarks: resolutionNote || ""
+      })
+    });
+  }
 
   return complaint;
 };
