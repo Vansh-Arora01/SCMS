@@ -24,7 +24,14 @@ console.log("Status transition:", complaint.status, "→", status);
 console.log("AssignedTo:", assignedTo);
 
 
-  if (!complaint.collegeId.equals(user.collegeId))
+  if (
+  !complaint.collegeId ||
+  !user.collegeId ||
+  complaint.collegeId.toString() !== user.collegeId.toString()
+) {
+  throw new ApiError(403, "Unauthorized");
+}
+
 
     throw new ApiError(403, "Unauthorized");
 
