@@ -4,6 +4,7 @@ import { ApiError } from "../../Utils/apierror.js";
 import { Complaint } from "../../Models/Complain.model.js";
 import { changeComplaintStatus } from "../../services/complaint.service.js";
 import { createNotification } from "../../services/notification.service.js";
+import { User } from "../../Models/User.model.js";
 
 export const getUnassignedComplaints = asynchandler(async (req, res) => {
   const complaints = await Complaint.find({
