@@ -18,6 +18,11 @@ export const changeComplaintStatus = async ({
     .populate("createdBy", "name email");
 
   if (!complaint) throw new ApiError(404, "Complaint not found");
+  console.log("User collegeId:", user.collegeId);
+console.log("Complaint collegeId:", complaint.collegeId);
+console.log("Status transition:", complaint.status, "→", status);
+console.log("AssignedTo:", assignedTo);
+
 
   if (!complaint.collegeId.equals(user.collegeId))
 
