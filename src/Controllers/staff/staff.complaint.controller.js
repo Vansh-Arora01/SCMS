@@ -69,9 +69,19 @@ export const updateAssignedComplaintStatus = asynchandler(async (req, res) => {
     throw new ApiError(404, "Complaint not found");
   }
 
-  if (!complaint.assignedTo.equals(req.user._id)) {
-    throw new ApiError(403, "Not assigned to you");
-  }
+  // if (!complaint.assignedTo.equals(req.user._id)) {
+  //   throw new ApiError(403, "Not assigned to you");
+  // }
+  // Safe college comparison
+const complaintCollege = complaint.collegeId?.toString();
+const userCollege = user?.collegeId?.toString();
+
+console.log("Complaint college:", complaintCollege);
+console.log("User college:", userCollege);
+
+if (!complaintCollege || !userCollege || complaintCollege !== userCollege) {
+  throw new ApiError(403, "Unauthorized");
+}
 
   const updatedComplaint = await changeComplaintStatus({
     complaintId: req.params.id,
