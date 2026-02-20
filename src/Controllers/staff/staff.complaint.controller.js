@@ -69,19 +69,16 @@ export const updateAssignedComplaintStatus = asynchandler(async (req, res) => {
     throw new ApiError(404, "Complaint not found");
   }
 
-  // if (!complaint.assignedTo.equals(req.user._id)) {
-  //   throw new ApiError(403, "Not assigned to you");
-  // }
-  // Safe college comparison
-const complaintCollege = complaint.collegeId?.toString();
-const userCollege = user?.collegeId?.toString();
+  // 🔐 SAFE college comparison (ObjectId or string both handled)
+  const complaintCollege = String(complaint.collegeId);
+  const userCollege = String(req.user?.collegeId);
 
-console.log("Complaint college:", complaintCollege);
-console.log("User college:", userCollege);
+  console.log("Complaint college:", complaintCollege);
+  console.log("User college:", userCollege);
 
-if (!complaintCollege || !userCollege || complaintCollege !== userCollege) {
-  throw new ApiError(403, "Unauthorized");
-}
+  if (!complaintCollege || !userCollege || complaintCollege !== userCollege) {
+    throw new ApiError(403, "Unauthorized");
+  }
 
   const updatedComplaint = await changeComplaintStatus({
     complaintId: req.params.id,
@@ -90,13 +87,12 @@ if (!complaintCollege || !userCollege || complaintCollege !== userCollege) {
     user: req.user
   });
 
-  /// notification update 
-
+  // 🔔 Notify complaint owner
   await createNotification({
-    userId: complaint.userId,
+    userId: complaint.createdBy,   // correct owner field
     role: "USER",
     title: "Complaint Status Updated",
-    message: `Your complaint is now ${status}`,
+    message: `Your complaint is now ${req.body.status}`,
     complaintId: complaint._id
   });
 
