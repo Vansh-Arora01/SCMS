@@ -133,5 +133,11 @@ assignedAt: {
   },
   { timestamps: true }
 );
-
+complaintSchema.pre("save", async function (next) {
+  if (!this.complaintNumber) {
+    const count = await mongoose.model("Complaint").countDocuments();
+    this.complaintNumber = `SCMS-${new Date().getFullYear()}-${String(count + 1).padStart(6, "0")}`;
+  }
+  next();
+});
 export const Complaint = mongoose.model("Complaint", complaintSchema);
