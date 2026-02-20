@@ -122,6 +122,11 @@ assignedAt: {
     reassignmentReason:{
       type:String
     },
+    complaintNumber: {
+  type: String,
+  unique: true,
+  index: true
+},
 
     /**
      * Admin resolution note (optional)
@@ -131,6 +136,7 @@ assignedAt: {
       trim: true
     }
   },
+  
   { timestamps: true }
 );
 complaintSchema.pre("save", async function (next) {
