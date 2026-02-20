@@ -138,6 +138,6 @@ complaintSchema.pre("save", async function (next) {
     const count = await mongoose.model("Complaint").countDocuments();
     this.complaintNumber = `SCMS-${new Date().getFullYear()}-${String(count + 1).padStart(6, "0")}`;
   }
-  next();
+  // next();
 });
 export const Complaint = mongoose.model("Complaint", complaintSchema);
