@@ -152,20 +152,28 @@ export const changeComplaintStatus = async ({
   await complaint.save();
 
   // Email trigger
-  const emailEvents = ["ASSIGNED", "IN_PROGRESS", "RESOLVED", "ESCALATED"];
+const emailEvents = ["ASSIGNED", "IN_PROGRESS", "RESOLVED", "ESCALATED"];
 
-  if (emailEvents.includes(status) && complaint.createdBy) {
+if (emailEvents.includes(status) && complaint.createdBy) {
+
+  const populatedComplaint = await Complaint.findById(complaint._id)
+    .populate("assignedTo", "name email")
+    .populate("createdBy", "name email");
+
+  const mailContent = complaintLifecycleMailgenContent({
+    username: populatedComplaint.createdBy.name,
+    complaint: populatedComplaint,
+    event: status
+  });
+
+  if (mailContent) {
     await sendEmail({
-      email: complaint.createdBy.email,
-      subject: `Complaint ${status}`,
-      mailgenContent: complaintLifecycleMailgenContent({
-        username: complaint.createdBy.name,
-        complaintId: complaint._id,
-        event: status,
-        remarks: resolutionNote || ""
-      })
+      email: populatedComplaint.createdBy.email,
+      subject: mailContent.subject,
+      mailgenContent: mailContent.body
     });
   }
+}
 
   return complaint;
 };
