@@ -7,6 +7,84 @@ import {validateStatusTransition} from "../Middlewares/complaint.middleware.js"
 import { sendEmail } from "../Utils/mail.js";
 import {complaintLifecycleMailgenContent} from "../mails/tempelates/ComplainStatus.js"
 
+// export const changeComplaintStatus = async ({
+//   complaintId,
+//   status,
+//   resolutionNote,
+//   assignedTo,
+//   user
+// }) => {
+//   const complaint = await Complaint.findById(complaintId)
+//     .populate("createdBy", "name email");
+
+//   if (!complaint) throw new ApiError(404, "Complaint not found");
+//   console.log("User collegeId:", user.collegeId);
+// console.log("Complaint collegeId:", complaint.collegeId);
+// console.log("Status transition:", complaint.status, "→", status);
+// console.log("AssignedTo:", assignedTo);
+
+
+//   if (
+//   !complaint.collegeId ||
+//   !user.collegeId ||
+//   complaint.collegeId.toString() !== user.collegeId.toString()
+// ) {
+//   throw new ApiError(403, "Unauthorized");
+// }
+
+
+//     throw new ApiError(403, "Unauthorized");
+
+//   if (["RESOLVED", "REJECTED"].includes(complaint.status))
+//     throw new ApiError(400, "Complaint already closed");
+
+//   const isValidTransition = validateStatusTransition(
+//     complaint.status,
+//     status
+//   );
+
+//   if (!isValidTransition)
+//     throw new ApiError(400, "Invalid status transition");
+
+//   // Assignment logic
+//   if (status === "ASSIGNED") {
+//     if (!assignedTo)
+//       throw new ApiError(400, "assignedTo required");
+
+//     const assignee = await User.findById(assignedTo);
+//     if (!assignee || !["ADMIN", "STAFF"].includes(assignee.role))
+//       throw new ApiError(400, "Invalid assignee");
+
+//     complaint.assignedTo = assignedTo;
+//     complaint.assignedAt = new Date();
+//   }
+
+//   complaint.status = status;
+
+//   if (resolutionNote) {
+//     complaint.resolutionNote = resolutionNote;
+//   }
+
+//   await complaint.save();
+
+//   // Email trigger (single source of truth)
+//   const emailEvents = ["ASSIGNED", "IN_PROGRESS", "RESOLVED", "ESCALATED"];
+
+//   if (emailEvents.includes(status) && complaint.createdBy) {
+//     await sendEmail({
+//       email: complaint.createdBy.email,
+//       subject: `Complaint ${status}`,
+//       mailgenContent: complaintLifecycleMailgenContent({
+//         username: complaint.createdBy.name,
+//         complaintId: complaint._id,
+//         event: status,
+//         remarks: resolutionNote || ""
+//       })
+//     });
+//   }
+
+//   return complaint;
+// };
 export const changeComplaintStatus = async ({
   complaintId,
   status,
@@ -17,52 +95,49 @@ export const changeComplaintStatus = async ({
   const complaint = await Complaint.findById(complaintId)
     .populate("createdBy", "name email");
 
-  if (!complaint) throw new ApiError(404, "Complaint not found");
-  console.log("User collegeId:", user.collegeId);
-console.log("Complaint collegeId:", complaint.collegeId);
-console.log("Status transition:", complaint.status, "→", status);
-console.log("AssignedTo:", assignedTo);
+  if (!complaint) {
+    throw new ApiError(404, "Complaint not found");
+  }
 
+  console.log("User collegeId:", user?.collegeId?.toString());
+  console.log("Complaint collegeId:", complaint?.collegeId?.toString());
+  console.log("Status transition:", complaint.status, "→", status);
+  console.log("AssignedTo:", assignedTo);
 
-//   if (
-//   !complaint.collegeId ||
-//   !user.collegeId ||
-//   complaint.collegeId.toString() !== user.collegeId.toString()
-// ) {
-//   throw new ApiError(403, "Unauthorized");
-// }
-const complaintCollege = complaint.collegeId?.toString();
-const userCollege = user?.collegeId?.toString();
+  // ✅ SAFE college comparison
+  const complaintCollege = complaint?.collegeId?.toString();
+  const userCollege = user?.collegeId?.toString();
 
-console.log("Complaint college:", complaintCollege);
-console.log("User college:", userCollege);
-
-if (!complaintCollege || !userCollege || complaintCollege !== userCollege) {
-  throw new ApiError(403, "Unauthorized");
-}
-
-
+  if (!complaintCollege || !userCollege || complaintCollege !== userCollege) {
     throw new ApiError(403, "Unauthorized");
+  }
 
-  if (["RESOLVED", "REJECTED"].includes(complaint.status))
+  // ❌ removed accidental extra throw
+
+  if (["RESOLVED", "REJECTED"].includes(complaint.status)) {
     throw new ApiError(400, "Complaint already closed");
+  }
 
   const isValidTransition = validateStatusTransition(
     complaint.status,
     status
   );
 
-  if (!isValidTransition)
+  if (!isValidTransition) {
     throw new ApiError(400, "Invalid status transition");
+  }
 
   // Assignment logic
   if (status === "ASSIGNED") {
-    if (!assignedTo)
+    if (!assignedTo) {
       throw new ApiError(400, "assignedTo required");
+    }
 
     const assignee = await User.findById(assignedTo);
-    if (!assignee || !["ADMIN", "STAFF"].includes(assignee.role))
+
+    if (!assignee || !["ADMIN", "STAFF"].includes(assignee.role)) {
       throw new ApiError(400, "Invalid assignee");
+    }
 
     complaint.assignedTo = assignedTo;
     complaint.assignedAt = new Date();
@@ -76,7 +151,7 @@ if (!complaintCollege || !userCollege || complaintCollege !== userCollege) {
 
   await complaint.save();
 
-  // Email trigger (single source of truth)
+  // Email trigger
   const emailEvents = ["ASSIGNED", "IN_PROGRESS", "RESOLVED", "ESCALATED"];
 
   if (emailEvents.includes(status) && complaint.createdBy) {
