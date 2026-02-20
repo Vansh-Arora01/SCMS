@@ -24,11 +24,20 @@ console.log("Status transition:", complaint.status, "→", status);
 console.log("AssignedTo:", assignedTo);
 
 
-  if (
-  !complaint.collegeId ||
-  !user.collegeId ||
-  complaint.collegeId.toString() !== user.collegeId.toString()
-) {
+//   if (
+//   !complaint.collegeId ||
+//   !user.collegeId ||
+//   complaint.collegeId.toString() !== user.collegeId.toString()
+// ) {
+//   throw new ApiError(403, "Unauthorized");
+// }
+const complaintCollege = complaint.collegeId?.toString();
+const userCollege = user?.collegeId?.toString();
+
+console.log("Complaint college:", complaintCollege);
+console.log("User college:", userCollege);
+
+if (!complaintCollege || !userCollege || complaintCollege !== userCollege) {
   throw new ApiError(403, "Unauthorized");
 }
 
