@@ -158,7 +158,8 @@ if (emailEvents.includes(status) && complaint.createdBy) {
 
   const populatedComplaint = await Complaint.findById(complaint._id)
     .populate("assignedTo", "name email")
-    .populate("createdBy", "name email");
+    .populate("createdBy", "name email")
+    .populate("collegeId", "name");
 
   const mailContent = complaintLifecycleMailgenContent({
     username: populatedComplaint.createdBy.name,
