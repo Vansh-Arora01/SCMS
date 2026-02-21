@@ -170,7 +170,7 @@ if (emailEvents.includes(status) && complaint.createdBy) {
     await sendEmail({
       email: populatedComplaint.createdBy.email,
       subject: mailContent.subject,
-      mailgenContent: mailContent.body
+      mailgenContent: mailContent
     });
   }
 }
