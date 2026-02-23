@@ -114,8 +114,8 @@ export const removeVote = asynchandler(async (req, res) => {
   const userId = req.user._id;
 
   const vote = await Vote.findOneAndDelete({
-    complaint: complaintId,
-    user: userId
+    complaintId: complaintId,
+    userId: userId
   });
 
   if (!vote) {
