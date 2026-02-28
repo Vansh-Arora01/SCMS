@@ -341,7 +341,7 @@ export const createComplaint = asynchandler(async (req, res) => {
     email: req.user.email,
     subject: "Complaint Registered Successfully",
     mailgenContent: complaintLifecycleMailgenContent({
-      username: req.user.username,
+      username: req.user.name,
       complaintId: complaint._id,
       event: "REGISTERED"
     })
