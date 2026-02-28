@@ -40,26 +40,30 @@ export const createComplaint = asynchandler(async (req, res) => {
     eligibleforVote: Boolean(eligibleforVote),
     priorityScore: 0
   });
-  // One event 
-  await sendEmail({
-    email: req.user.email,
-    subject: mailContent.subject,
-    mailgenContent: complaintLifecycleMailgenContent({
-      username: req.user.name,
-      complaintId: complaint,
-      event: "REGISTERED"
-    })
-  })
 
-  return res
-    .status(201)
-    .json(
-      new ApiResponse(
-        201,
-        complaint,
-        "Complaint created successfully"
-      )
-    );
+  // 🔥 Safe mail sending
+  try {
+    const mailContent = complaintLifecycleMailgenContent({
+      name: req.user.name,
+      complaint,
+      event: "REGISTERED"
+    });
+
+    if (mailContent) {
+      await sendEmail({
+        email: req.user.email,
+        subject: mailContent.subject,
+        mailgenContent: mailContent.mailgenContent
+      });
+    }
+
+  } catch (mailError) {
+    console.log("Mail failed but complaint created:", mailError.message);
+  }
+
+  return res.status(201).json(
+    new ApiResponse(201, complaint, "Complaint created successfully")
+  );
 });
 
 /**

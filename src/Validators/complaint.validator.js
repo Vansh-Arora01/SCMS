@@ -27,7 +27,7 @@ export const complaintIdValidator = [
 
 export const updateComplaintStatusValidator = [
   body("status")
-    .isIn(["OPEN", "IN_PROGRESS", "RESOLVED", "REJECTED", "ESCALATED"])
+    .isIn(["OPEN", "IN_PROGRESS", "RESOLVED", "REJECTED", "ASSIGNED"])
     .withMessage("Invalid status"),
 
   body("resolutionNote")
