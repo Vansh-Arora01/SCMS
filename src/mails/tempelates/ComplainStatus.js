@@ -38,10 +38,11 @@ const complaintLifecycleMailgenContent = ({
       ? { key: label, value }
       : null;
 
-  return {
-    subject: `${current.subject} | ${complaint.complaintNumber || ""}`,
+ return {
+  subject: `${current.subject} | ${complaint.complaintNumber || ""}`,
+  mailgenContent: {              // 🔥 wrap inside mailgenContent
     body: {
-      name: username,
+      name: username || "User",
       intro: current.intro,
       table: {
         data: [
@@ -49,8 +50,6 @@ const complaintLifecycleMailgenContent = ({
           addField("Title", complaint.title),
           addField("Category", complaint.category),
           addField("Status", complaint.status),
-          // addField("Priority", complaint.priority),
-          // addField("Priority Score", complaint.priorityScore),
           addField("Assigned To", complaint.assignedTo?.name),
           addField("Total Votes", complaint.voteCount),
           addField("College", complaint.collegeId?.name || "Not Available"),
@@ -63,9 +62,11 @@ const complaintLifecycleMailgenContent = ({
           )
         ].filter(Boolean)
       },
-      outro: "You can track your complaint status anytime from your SCMS dashboard."
+      outro:
+        "You can track your complaint status anytime from your SCMS dashboard."
     }
-  };
+  }
+};
 };
 
 export { complaintLifecycleMailgenContent };
