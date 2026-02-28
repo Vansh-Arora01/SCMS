@@ -43,22 +43,25 @@ export const createComplaint = asynchandler(async (req, res) => {
 
   // 🔥 Safe mail sending
   try {
+    console.log("📧 Preparing to send mail...");
     const mailContent = complaintLifecycleMailgenContent({
       name: req.user.name,
       complaint,
       event: "REGISTERED"
     });
-
+console.log("📦 Mail Content:", mailContent);
     if (mailContent) {
       await sendEmail({
         email: req.user.email,
         subject: mailContent.subject,
         mailgenContent: mailContent.mailgenContent
       });
+       console.log("✅ Mail sent:", response);
     }
 
   } catch (mailError) {
     console.log("Mail failed but complaint created:", mailError.message);
+     console.log("❌ Mail failed:", mailError);
   }
 
   return res.status(201).json(
