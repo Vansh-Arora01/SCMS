@@ -77,7 +77,7 @@ assignedAt: {
      * Tenant isolation (SaaS core)
      */
     collegeId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       required: true,
       index: true
     },

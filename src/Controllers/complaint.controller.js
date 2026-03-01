@@ -44,7 +44,7 @@ export const createComplaint = asynchandler(async (req, res) => {
   // 🔥 Safe mail sending
   try {
   console.log("📧 Preparing to send mail...");
-
+console.log(req.user);
   const mailContent = complaintLifecycleMailgenContent({
     username: req.user.username,   // or req.user.username (check!)
     complaint,
