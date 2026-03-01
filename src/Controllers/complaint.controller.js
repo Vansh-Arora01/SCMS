@@ -109,10 +109,7 @@ export const listComplaints = asynchandler(async (req, res) => {
  * =====================================================
  */
 export const getComplaintById = asynchandler(async (req, res) => {
-  const complaint = await Complaint.findOne({
-   complaintId: new mongoose.Types.ObjectId(req.params.id)
-});
-  // const complaint = await Complaint.findById(req.params.id);
+  const complaint = await Complaint.findById(req.params.id);
 
   if (!complaint) {
     throw new ApiError(404, "Complaint not found");
@@ -172,41 +169,11 @@ export const getVoteableComplaints = asynchandler(async (req, res) => {
   );
 });
 
-// export const getComplaintStatusById = asynchandler(async (req, res) => {
-//   const { id } = req.params;
-// const complaint = await Complaint.findById(id).select(
-//   "title description status priorityScore voteCount assignedTo createdAt updatedAt"
-// );
-//   // const complaint = await Complaint.findById(id).select(
-//   //   "title description status priority voteCount assignedTo createdAt updatedAt"
-//   // );
-
-//   if (!complaint) {
-//     throw new ApiError(404, "Complaint not found");
-//   }
-
-//   return res.status(200).json(
-//     new ApiResponse(
-//       200,
-//       complaint,
-//       "Complaint status fetched successfully"
-//     )
-//   );
-// });
 export const getComplaintStatusById = asynchandler(async (req, res) => {
   const { id } = req.params;
 
-  const isValidObjectId = mongoose.Types.ObjectId.isValid(id);
-
-  const complaint = await Complaint.findOne({
-    $or: [
-      { complaintId: id }, // works if stored as STRING
-      ...(isValidObjectId
-        ? [{ complaintId: new mongoose.Types.ObjectId(id) }] // works if stored as ObjectId
-        : [])
-    ]
-  }).select(
-    "title description status priorityScore voteCount assignedTo createdAt updatedAt"
+  const complaint = await Complaint.findById(id).select(
+    "title description status priority voteCount assignedTo createdAt updatedAt"
   );
 
   if (!complaint) {
@@ -221,6 +188,7 @@ export const getComplaintStatusById = asynchandler(async (req, res) => {
     )
   );
 });
+
 
 
 export const deleteComplaint = asynchandler(async (req, res) => {

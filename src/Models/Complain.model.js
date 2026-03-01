@@ -78,7 +78,6 @@ assignedAt: {
      */
     collegeId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "College",
       required: true,
       index: true
     },
