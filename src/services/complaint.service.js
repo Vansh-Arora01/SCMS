@@ -171,7 +171,9 @@ if (emailEvents.includes(status) && complaint.createdBy) {
     await sendEmail({
       email: populatedComplaint.createdBy.email,
       subject: mailContent.subject,
-      mailgenContent: mailContent
+      // mailgenContent: mailContent
+      // i think i have to chage here so doing it 1 change 
+       mailgenContent: mailContent.mailgenContent  // ✅ ONLY body
     });
   }
 }
