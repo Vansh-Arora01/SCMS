@@ -73,17 +73,24 @@ const VOTE_ESCALATION_THRESHOLD = 10;
 //   );
 // });
 export const voteOnComplaint = asynchandler(async (req, res) => {
-
   const complaintId = req.params.id;
   const userId = req.user._id;
 
-  // Check complaint exists
-  const complaint = await Complaint.findById(complaintId);
+  
+
+  // 🔎 Check complaint exists AND belongs to same college
+  const complaint = await Complaint.findOne({
+    _id: complaintId,
+    collegeId: req.user.collegeId,
+    eligibleforVote: true,
+    status: { $nin: ["RESOLVED", "REJECTED"] }
+  });
+
   if (!complaint) {
-    throw new ApiError(404, "Complaint not found");
+    throw new ApiError(404, "Complaint not found or not eligible for voting");
   }
 
-  // Prevent duplicate voting
+  // 🚫 Prevent duplicate vote
   const alreadyVoted = await Vote.findOne({
     complaintId,
     userId
@@ -93,15 +100,17 @@ export const voteOnComplaint = asynchandler(async (req, res) => {
     throw new ApiError(400, "You have already voted for this complaint");
   }
 
-  // Create vote
+  // ✅ Create vote
   await Vote.create({
     complaintId,
     userId
   });
 
-  // Increment vote count
-  complaint.voteCount += 1;
-  await complaint.save();
+  // ✅ Atomic increment (SAFE)
+  await Complaint.findByIdAndUpdate(
+    complaintId,
+    { $inc: { voteCount: 1 } }
+  );
 
   return res.status(200).json(
     new ApiResponse(200, null, "Vote registered successfully")
@@ -113,28 +122,49 @@ export const removeVote = asynchandler(async (req, res) => {
   const { id: complaintId } = req.params;
   const userId = req.user._id;
 
+  // 🔐 Role restriction
+  
+
+  // 🔎 Check complaint exists + same college
+  const complaint = await Complaint.findOne({
+    _id: complaintId,
+    collegeId: req.user.collegeId
+  });
+
+  if (!complaint) {
+    throw new ApiError(404, "Complaint not found");
+  }
+
+  // 🗳 Remove vote
   const vote = await Vote.findOneAndDelete({
-    complaintId: complaintId,
-    userId: userId
+    complaintId,
+    userId
   });
 
   if (!vote) {
     throw new ApiError(400, "You have not voted on this complaint");
   }
 
-  const complaint = await Complaint.findById(complaintId);
+  // 🔄 Atomic decrement
+  const updatedComplaint = await Complaint.findByIdAndUpdate(
+    complaintId,
+    { $inc: { voteCount: -1 } },
+    { new: true }
+  );
 
-  complaint.voteCount = Math.max(0, complaint.voteCount - 1);
-  complaint.priority = calculatePriority(complaint.voteCount);
+  // 🧠 Recalculate priority safely
+  updatedComplaint.priority = calculatePriority(
+    Math.max(0, updatedComplaint.voteCount)
+  );
 
-  await complaint.save();
+  await updatedComplaint.save();
 
   return res.status(200).json(
     new ApiResponse(
       200,
       {
-        voteCount: complaint.voteCount,
-        priority: complaint.priority
+        voteCount: updatedComplaint.voteCount,
+        priority: updatedComplaint.priority
       },
       "Vote removed successfully"
     )

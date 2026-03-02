@@ -90,7 +90,7 @@ export const updateAssignedComplaintStatus = asynchandler(async (req, res) => {
   // 🔔 Notify complaint owner
   await createNotification({
     userId: complaint.createdBy,   // correct owner field
-    role: "USER",
+    role: "STUDENT",
     title: "Complaint Status Updated",
     message: `Your complaint is now ${req.body.status}`,
     complaintId: complaint._id

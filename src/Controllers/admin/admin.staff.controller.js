@@ -6,19 +6,37 @@ import { User } from "../../Models/User.model.js";
 
 
 export const createStaff = asynchandler(async (req, res) => {
-  const { name, email, password, enrollment } = req.body;
+  const { name, email, password, enrollment, department } = req.body;
+
+  // 🔐 Only admin allowed
+  if (req.user.role !== "ADMIN") {
+    throw new ApiError(403, "Only admin can create staff");
+  }
+
+  // 🔎 Prevent duplicates
+  const existing = await User.findOne({
+    $or: [{ email }, { enrollment }]
+  });
+
+  if (existing) {
+    throw new ApiError(400, "Staff already exists with email or enrollment");
+  }
 
   const staff = await User.create({
     name,
     email,
     password,
     role: "STAFF",
+    department,
     collegeId: req.user.collegeId,
     enrollment
   });
 
+  // Remove password from response
+  const createdStaff = await User.findById(staff._id).select("-password");
+
   res.status(201).json(
-    new ApiResponse(201, staff, "Staff created successfully")
+    new ApiResponse(201, createdStaff, "Staff created successfully")
   );
 });
 

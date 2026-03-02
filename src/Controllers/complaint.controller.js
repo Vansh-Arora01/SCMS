@@ -135,16 +135,18 @@ export const getComplaintById = asynchandler(async (req, res) => {
 export const getVoteableComplaints = asynchandler(async (req, res) => {
   const userId = req.user._id;
 
-  // 1. Get complaints
+  // 1. Get complaints (college isolated)
   const complaints = await Complaint.find({
+    collegeId: req.user.collegeId,   // 🔥 IMPORTANT
     eligibleforVote: true,
     status: { $nin: ["RESOLVED", "REJECTED"] }
   })
-    .select("title category voteCount status createdAt description") // Fixed: votes -> voteCount
+    .select("title category voteCount status createdAt description attachments")
     .sort({ createdAt: -1 });
 
   // 2. Get user's votes for these complaints
   const complaintIds = complaints.map(c => c._id);
+
   const userVotes = await Vote.find({
     userId,
     complaintId: { $in: complaintIds }
@@ -172,9 +174,18 @@ export const getVoteableComplaints = asynchandler(async (req, res) => {
 export const getComplaintStatusById = asynchandler(async (req, res) => {
   const { id } = req.params;
 
-  const complaint = await Complaint.findById(id).select(
-    "title description status priority voteCount assignedTo createdAt updatedAt"
-  );
+  const filter = {
+    _id: id,
+    collegeId: req.user.collegeId
+  };
+
+  // If student, restrict to their own complaint
+  if (req.user.role === "STUDENT") {
+    filter.createdBy = req.user._id;
+  }
+
+  const complaint = await Complaint.findOne(filter)
+    .select("title description status priority voteCount assignedTo createdAt updatedAt");
 
   if (!complaint) {
     throw new ApiError(404, "Complaint not found");

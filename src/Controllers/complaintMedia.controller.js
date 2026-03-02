@@ -12,40 +12,42 @@ export const uploadComplaintMedia = asynchandler(async (req, res) => {
     throw new ApiError(404, "Complaint not found");
   }
 
-  // Tenant isolation
-  if (complaint.collegeId.toString() !== req.user.collegeId.toString()) {
-  throw new ApiError(403, "Access denied");
-}
+  if (String(complaint.collegeId) !== String(req.user.collegeId)) {
+    throw new ApiError(403, "Access denied");
+  }
 
-
-  // Prevent uploads after resolution
   if (["RESOLVED", "REJECTED"].includes(complaint.status)) {
-    throw new ApiError(
-      400,
-      "Cannot upload media to a closed complaint"
-    );
+    throw new ApiError(400, "Cannot upload media to a closed complaint");
   }
 
   if (!req.file) {
     throw new ApiError(400, "No file provided");
   }
 
-  const cloudResult = await uploadToCloudinary(
-    req.file.path,
-    `scms/complaints/${complaint._id}`
-  );
+  let cloudResult;
+
+  try {
+    cloudResult = await uploadToCloudinary(
+      req.file.path,
+      `scms/complaints/${complaint._id}`
+    );
+  } catch (err) {
+    try { fs.unlinkSync(req.file.path); } catch {}
+    throw new ApiError(500, "Cloud upload failed");
+  }
 
   complaint.attachments.push({
     url: cloudResult.secure_url,
-    fileType: req.file.mimetype.includes("pdf")
-      ? "PDF"
-      : "IMAGE"
+    fileType: req.file.mimetype.includes("pdf") ? "PDF" : "IMAGE"
   });
 
   await complaint.save();
 
-  // cleanup temp file
-  fs.unlinkSync(req.file.path);
+  try {
+    fs.unlinkSync(req.file.path);
+  } catch (err) {
+    console.error("Cleanup failed:", err.message);
+  }
 
   return res.status(200).json(
     new ApiResponse(

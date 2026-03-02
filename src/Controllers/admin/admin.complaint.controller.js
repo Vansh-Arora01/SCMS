@@ -123,7 +123,7 @@ export const reassignComplaint = asynchandler(async (req, res) => {
     throw new ApiError(404, "Complaint not found");
   }
 
-  if (complaint.collegeId !== req.user.collegeId) {
+ if (String(complaint.collegeId) !== String(req.user.collegeId)){
     throw new ApiError(403, "Unauthorized");
   }
 
