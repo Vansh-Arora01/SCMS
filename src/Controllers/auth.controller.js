@@ -155,9 +155,9 @@ const resendEmailVerification = asynchandler(async (req, res) => {
         email: user?.email,
         subject: "Please verify your Email",
         mailgenContent: emailVerificationMailgenContent(
-            user.username,
+            user?.name|| "USER",
             // GENERATION OF DYNAMIC LINKS
-             `${req.protocol}://${req.get("host")}/api/v1/auth/verify-email/${unhashedToken}`
+             `${process.env.FRONTEND_URL}/verify-email/${unhashedToken}`
         ),
 
     })
