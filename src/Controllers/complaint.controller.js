@@ -14,6 +14,7 @@ import {
 // import { ComplaintMedia } from "../Models/ComplaintMedia.model.js";
 import { sendEmail } from "../Utils/mail.js";
 import { complaintLifecycleMailgenContent } from "../mails/tempelates/ComplainStatus.js"
+import { createNotification } from "../services/notification.service.js";
 
 /**
  * =====================================================
@@ -64,6 +65,22 @@ export const createComplaint = asynchandler(async (req, res) => {
 } catch (mailError) {
   console.log("❌ Mail failed:", mailError.message);
 }
+/* ================= NOTIFICATION ================= */
+
+  try {
+    await createNotification({
+     userId: req.user._id,
+      role: req.user.role,  // STUDENT / ADMIN
+      title: "Complaint Registered Successfully",
+      message: `Your complaint "${complaint.title}" has been registered and is currently OPEN.`,
+      complaintId: complaint._id
+    });
+
+    console.log("🔔 Notification created");
+
+  } catch (notificationError) {
+    console.log("❌ Notification failed:", notificationError.message);
+  }
 
   return res.status(201).json(
     new ApiResponse(201, complaint, "Complaint created successfully")
