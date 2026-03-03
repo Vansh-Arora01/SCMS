@@ -29,6 +29,7 @@ export const createStaff = asynchandler(async (req, res) => {
     role: "STAFF",
     department,
     collegeId: req.user.collegeId,
+    college : req.user.college,
     enrollment
   });
 
