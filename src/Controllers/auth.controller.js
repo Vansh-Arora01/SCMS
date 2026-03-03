@@ -394,7 +394,7 @@ const forgotPasswordRequest = asynchandler(async(req,res)=>{
         subject: "Password reset Request",
         mailgenContent: forgotPasswordMailgenContent(
             user.username,
-            `${req.protocol}://${req.get("host")}/api/v1/auth/reset-password/${unhashedToken}`
+           `${process.env.FRONTEND_URL}/reset-password/${unhashedToken}`
         ),
   })
 
