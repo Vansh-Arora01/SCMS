@@ -117,7 +117,12 @@ export const changeComplaintStatus = async ({
   if (["RESOLVED", "REJECTED"].includes(complaint.status)) {
     throw new ApiError(400, "Complaint already closed");
   }
-
+console.log("==== DEBUG STATUS TRANSITION ====");
+console.log("Complaint ID:", complaintId);
+console.log("Current Status:", complaint.status);
+console.log("Incoming Status:", status);
+console.log("User:", user);
+console.log("=================================");
   const isValidTransition = validateStatusTransition(
     complaint.status,
     status
