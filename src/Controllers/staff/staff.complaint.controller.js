@@ -86,7 +86,7 @@ export const updateAssignedComplaintStatus = asynchandler(async (req, res) => {
     resolutionNote: req.body.resolutionNote,
     user: req.user
   });
-
+  
   // 🔔 Notify complaint owner
   await createNotification({
     userId: complaint.createdBy,   // correct owner field

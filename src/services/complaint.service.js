@@ -145,7 +145,11 @@ export const changeComplaintStatus = async ({
 
   complaint.status = status;
 
-  if (resolutionNote) {
+ if (status === "RESOLVED"|| "REJECTED") {
+    if (!resolutionNote || !resolutionNote.trim()) {
+      throw new ApiError(400, "Resolution note is required");
+    }
+
     complaint.resolutionNote = resolutionNote;
   }
 
