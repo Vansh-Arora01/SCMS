@@ -67,7 +67,7 @@ export const deleteStaff = asynchandler(async (req, res) => {
   );
 });
 
-export const getAllStaff = asyncHandler(async (req, res) => {
+export const getAllStaff = asynchandler(async (req, res) => {
   const staff = await User.find({ role: "STAFF" }).select("-password");
 
   res.status(200).json({
