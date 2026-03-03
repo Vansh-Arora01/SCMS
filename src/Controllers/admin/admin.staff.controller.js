@@ -67,6 +67,14 @@ export const deleteStaff = asynchandler(async (req, res) => {
   );
 });
 
+export const getAllStaff = asyncHandler(async (req, res) => {
+  const staff = await User.find({ role: "STAFF" }).select("-password");
+
+  res.status(200).json({
+    success: true,
+    data: staff,
+  });
+});
 
 // admin profile isse me add kr rha ho 
 export const getAdminProfile = asynchandler(async (req, res) => {

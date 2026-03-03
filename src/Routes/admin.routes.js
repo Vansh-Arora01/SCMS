@@ -2,7 +2,7 @@ import express from "express";
 import { verifyJWT } from "../Middlewares/Auth.middleware.js";
 import { allowRoles } from "../Middlewares/role.middleware.js";
 import {getUnassignedComplaints,assignComplaint,reassignComplaint,getComplaintsSortedByDepartment,getComplaintsCategoryWise} from "../Controllers/admin/admin.complaint.controller.js"
-import {createStaff,deleteStaff,getAdminProfile} from "../Controllers/admin/admin.staff.controller.js"
+import {createStaff,deleteStaff,getAdminProfile,getAllStaff} from "../Controllers/admin/admin.staff.controller.js"
 
 const router = express.Router();
 
@@ -48,7 +48,12 @@ router.delete(
   deleteStaff
 );
 
-
+router.get(
+  "/all-staff",
+ verifyJWT,
+  allowRoles("ADMIN"),
+  getAllStaff
+)
 // admin profile vala isse me staff se liya ha 
 router.get(
   "/profile",
