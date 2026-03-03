@@ -63,35 +63,44 @@ export const getAssignedComplaintById = asynchandler(async (req, res) => {
 
 
 export const updateAssignedComplaintStatus = asynchandler(async (req, res) => {
+
   const complaint = await Complaint.findById(req.params.id);
 
   if (!complaint) {
     throw new ApiError(404, "Complaint not found");
   }
 
-  // 🔐 SAFE college comparison (ObjectId or string both handled)
+  // 🔐 SAFE college comparison
   const complaintCollege = String(complaint.collegeId);
   const userCollege = String(req.user?.collegeId);
-
-  console.log("Complaint college:", complaintCollege);
-  console.log("User college:", userCollege);
 
   if (!complaintCollege || !userCollege || complaintCollege !== userCollege) {
     throw new ApiError(403, "Unauthorized");
   }
+
+  // 🔥 Extract properly
   const { status, resolutionNote } = req.body;
+
+  if (!status || typeof status !== "string") {
+    throw new ApiError(400, "Invalid status value");
+  }
+
+  console.log("Extracted Status:", status);
+  console.log("Extracted Resolution:", resolutionNote);
+
   const updatedComplaint = await changeComplaintStatus({
     complaintId: req.params.id,
-    status,
-    resolutionNote,
+    status,              // ✅ string only
+    resolutionNote,      // ✅ separate field
     user: req.user
   });
+
   // 🔔 Notify complaint owner
   await createNotification({
-    userId: complaint.createdBy,   // correct owner field
+    userId: complaint.createdBy,
     role: "STUDENT",
     title: "Complaint Status Updated",
-    message: `Your complaint is now ${req.body.status}`,
+    message: `Your complaint is now ${status}`,
     complaintId: complaint._id
   });
 
