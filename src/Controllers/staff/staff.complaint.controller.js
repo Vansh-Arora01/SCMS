@@ -79,7 +79,7 @@ export const updateAssignedComplaintStatus = asynchandler(async (req, res) => {
   if (!complaintCollege || !userCollege || complaintCollege !== userCollege) {
     throw new ApiError(403, "Unauthorized");
   }
-
+  const { status, resolutionNote } = req.body;
   const updatedComplaint = await changeComplaintStatus({
     complaintId: req.params.id,
     status,
