@@ -3,6 +3,7 @@ import { verifyJWT } from "../Middlewares/Auth.middleware.js";
 import { allowRoles } from "../Middlewares/role.middleware.js";
 import {getUnassignedComplaints,assignComplaint,reassignComplaint,getComplaintsSortedByDepartment,getComplaintsCategoryWise} from "../Controllers/admin/admin.complaint.controller.js"
 import {createStaff,deleteStaff,getAdminProfile,getAllStaff} from "../Controllers/admin/admin.staff.controller.js"
+import { getAdminDashboardStats } from "../Controllers/admin/dashboard.controller.js";
 
 const router = express.Router();
 
@@ -78,6 +79,10 @@ router.get(
   getComplaintsCategoryWise
 );
 
+router.get("/dashboard-stats", 
+  verifyJWT, 
+  allowRoles("ADMIN","SUPER_ADMIN"),
+  getAdminDashboardStats);
 
 
 export default router;
