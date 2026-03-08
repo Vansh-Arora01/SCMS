@@ -67,7 +67,7 @@ await user.save({validateBeforeSave:false});
         mailgenContent: emailVerificationMailgenContent(
             user.username,
             // GENERATION OF DYNAMIC LINKS
-            `${req.protocol}://${req.get("host")}/api/v1/auth/verify-email/${unhashedToken}`
+            `${process.env.FRONTEND_URL}/verify-email/${unhashedToken}`
         ),
 
     })
