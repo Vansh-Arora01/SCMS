@@ -88,7 +88,7 @@ import {complaintLifecycleMailgenContent} from "../mails/tempelates/ComplainStat
 export const changeComplaintStatus = async ({
   complaintId,
   status,
-  resolutionNote,
+  resolutionNote ="None",
   assignedTo,
   user
 }) => {
