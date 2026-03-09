@@ -70,7 +70,7 @@ export const updateAssignedComplaintStatus = asynchandler(async (req, res) => {
     throw new ApiError(404, "Complaint not found");
   }
 
-  // 🔐 SAFE college comparison
+  //  SAFE college comparison
   const complaintCollege = String(complaint.collegeId);
   const userCollege = String(req.user?.collegeId);
 
@@ -78,7 +78,7 @@ export const updateAssignedComplaintStatus = asynchandler(async (req, res) => {
     throw new ApiError(403, "Unauthorized");
   }
 
-  // 🔥 Extract properly
+  //  Extract properly
   const { status, resolutionNote } = req.body;
 
   if (!status || typeof status !== "string") {
@@ -90,8 +90,8 @@ export const updateAssignedComplaintStatus = asynchandler(async (req, res) => {
 
   const updatedComplaint = await changeComplaintStatus({
     complaintId: req.params.id,
-    status,              // ✅ string only
-    resolutionNote,      // ✅ separate field
+    status,              //  string only
+    resolutionNote,      //  separate field
     user: req.user
   });
 

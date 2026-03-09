@@ -112,7 +112,7 @@ export const changeComplaintStatus = async ({
     throw new ApiError(403, "Unauthorized");
   }
 
-  // ❌ removed accidental extra throw
+  //  removed accidental extra throw
 
   if (["RESOLVED", "REJECTED"].includes(complaint.status)) {
     throw new ApiError(400, "Complaint already closed");

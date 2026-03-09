@@ -6,8 +6,8 @@ const sendEmail = async (options)=>{
     const mailGenerator = new Mailgen({
         theme:"default",
         product:{
-            name:"Admin",
-            link :"https://adminmanagerlink.com",
+            name:"SCMS",
+            link :"https://scms-frontend-mt99.vercel.app/",
         }
     })
 
@@ -18,16 +18,17 @@ const sendEmail = async (options)=>{
 
 
    const transporter= nodemailer.createTransport({
-        host : process.env.MAILTRAP_SMTP_HOST,
-        port : process.env.MAILTRAP_SMTP_PORT,
+        host : process.env.BREVO_SMTP_HOST,
+        port : process.env.BREVO_SMTP_PORT,
+        secure: false,
         auth:{
-            user:process.env.MAILTRAP_SMTP_USER,
-            pass: process.env.MAILTRAP_SMTP_PASS,
+            user:process.env.BREVO_SMTP_USER,
+            pass: process.env.BREVO_SMTP_PASS,
         }
 
     })
     const mail={
-            from:"mail.tasks@example.com",
+            from:process.env.EMAIL_FROM,
             to:options.email,
             subject :options.subject,
             text:mailgenTextual,
@@ -36,7 +37,7 @@ const sendEmail = async (options)=>{
         try {
             await transporter.sendMail(mail)
         } catch (error) {
-            console.error("email service failed silently this might happen because of credentials of mailtrap Check!! .env")
+            console.error("email service failed silently this might happen because of credentials of brevo Check!! .env")
             console.error(error)
         }
 

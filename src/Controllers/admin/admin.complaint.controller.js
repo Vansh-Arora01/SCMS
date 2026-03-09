@@ -73,12 +73,12 @@ export const assignComplaint = asynchandler(async (req, res) => {
 
   const { enrollment, name } = req.body;
 
-  // ✅ Enrollment compulsory
+  //  Enrollment compulsory
   if (!enrollment) {
     throw new ApiError(400, "Staff enrollment is required");
   }
 
-  // 🔎 Find staff by enrollment + role + college
+  //  Find staff by enrollment + role + college
   const staff = await User.findOne({
     enrollment,
     role: "STAFF",
