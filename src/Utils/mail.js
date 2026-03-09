@@ -1,52 +1,143 @@
+// import Mailgen from "mailgen";
+
+// import nodemailer from "nodemailer"
+
+// const sendEmail = async (options)=>{
+//     const mailGenerator = new Mailgen({
+//         theme:"default",
+//         product:{
+//             name:"SCMS",
+//             link :"https://scms-frontend-mt99.vercel.app/",
+//         }
+//     })
+
+
+//     const mailgenTextual = mailGenerator.generatePlaintext(options.mailgenContent)
+//     const mailgenHtml = mailGenerator.generate(options.mailgenContent)
+
+
+
+//    const transporter= nodemailer.createTransport({
+//         host : process.env.BREVO_SMTP_HOST,
+//         port : process.env.BREVO_SMTP_PORT,
+//         secure: false,
+//         auth:{
+//             user:process.env.BREVO_SMTP_USER,
+//             pass: process.env.BREVO_SMTP_PASS,
+//         }
+
+//     })
+//     const mail={
+//             from:process.env.EMAIL_FROM,
+//             to:options.email,
+//             subject :options.subject,
+//             text:mailgenTextual,
+//             html:mailgenHtml,
+//         }
+//         try {
+//             await transporter.sendMail(mail)
+//         } catch (error) {
+//             console.error("email service failed silently this might happen because of credentials of brevo Check!! .env")
+//             console.error(error)
+//         }
+
+
+
+
+// }
+
+
+
+// const emailVerificationMailgenContent = (username, verificationurl) => {
+//     return {
+//         body: {
+//             name: username,
+//             intro: "Welcome to our SCMS Platform",
+//             action: {
+//                 instructions: "To verify your email Please click on the given button",
+//                 button: {
+//                     color: '#54ad7bff', // Optional action button color
+//                     text: 'Confirm your account',
+//                     link: verificationurl
+//                 },
+//             },
+//             outro: "Need Help or have Questions ? Just reply to email , We are ready to help"
+
+//         },
+//     }
+
+// }
+// const forgotPasswordMailgenContent = (username, passwordReseturl) => {
+//     return {
+//         body: {
+//             name: username,
+//             intro: "We got your request to reset your password",
+//             action: {
+//                 instructions: "To reset your password Please click on the given button",
+//                 button: {
+//                     color: '#603496ff', // Optional action button color
+//                     text: 'reset password',
+//                     link: passwordReseturl
+//                 },
+//             },
+//             outro: "Need Help or have Questions? Just reply to email , We are ready to help"
+
+//         },
+//     }
+
+// }
+
+
+// export{
+//     emailVerificationMailgenContent,
+//     forgotPasswordMailgenContent,
+//     sendEmail
+// }
 import Mailgen from "mailgen";
+import SibApiV3Sdk from "sib-api-v3-sdk";
 
-import nodemailer from "nodemailer"
+// Brevo API configuration
+const client = SibApiV3Sdk.ApiClient.instance;
+const apiKey = client.authentications["api-key"];
+apiKey.apiKey = process.env.BREVO_API_KEY;
 
-const sendEmail = async (options)=>{
+const tranEmailApi = new SibApiV3Sdk.TransactionalEmailsApi();
+
+const sendEmail = async (options) => {
     const mailGenerator = new Mailgen({
-        theme:"default",
-        product:{
-            name:"SCMS",
-            link :"https://scms-frontend-mt99.vercel.app/",
+        theme: "default",
+        product: {
+            name: "SCMS",
+            link: "https://scms-frontend-mt99.vercel.app/",
         }
-    })
+    });
 
+    const mailgenTextual = mailGenerator.generatePlaintext(options.mailgenContent);
+    const mailgenHtml = mailGenerator.generate(options.mailgenContent);
 
-    const mailgenTextual = mailGenerator.generatePlaintext(options.mailgenContent)
-    const mailgenHtml = mailGenerator.generate(options.mailgenContent)
+    const email = {
+        sender: {
+            name: "SCMS Support",
+            email: process.env.EMAIL_FROM
+        },
+        to: [
+            {
+                email: options.email
+            }
+        ],
+        subject: options.subject,
+        htmlContent: mailgenHtml,
+        textContent: mailgenTextual
+    };
 
-
-
-   const transporter= nodemailer.createTransport({
-        host : process.env.BREVO_SMTP_HOST,
-        port : process.env.BREVO_SMTP_PORT,
-        secure: false,
-        auth:{
-            user:process.env.BREVO_SMTP_USER,
-            pass: process.env.BREVO_SMTP_PASS,
-        }
-
-    })
-    const mail={
-            from:process.env.EMAIL_FROM,
-            to:options.email,
-            subject :options.subject,
-            text:mailgenTextual,
-            html:mailgenHtml,
-        }
-        try {
-            await transporter.sendMail(mail)
-        } catch (error) {
-            console.error("email service failed silently this might happen because of credentials of brevo Check!! .env")
-            console.error(error)
-        }
-
-
-
-
-}
-
-
+    try {
+        await tranEmailApi.sendTransacEmail(email);
+        console.log("Email sent successfully to:", options.email);
+    } catch (error) {
+        console.error("Brevo email sending failed. Check BREVO_API_KEY in .env");
+        console.error(error);
+    }
+};
 
 const emailVerificationMailgenContent = (username, verificationurl) => {
     return {
@@ -54,42 +145,38 @@ const emailVerificationMailgenContent = (username, verificationurl) => {
             name: username,
             intro: "Welcome to our SCMS Platform",
             action: {
-                instructions: "To verify your email Please click on the given button",
+                instructions: "To verify your email please click the button below:",
                 button: {
-                    color: '#54ad7bff', // Optional action button color
-                    text: 'Confirm your account',
+                    color: "#54ad7bff",
+                    text: "Confirm your account",
                     link: verificationurl
                 },
             },
-            outro: "Need Help or have Questions ? Just reply to email , We are ready to help"
-
+            outro: "Need help or have questions? Just reply to this email, we are ready to help."
         },
-    }
+    };
+};
 
-}
 const forgotPasswordMailgenContent = (username, passwordReseturl) => {
     return {
         body: {
             name: username,
-            intro: "We got your request to reset your password",
+            intro: "We received a request to reset your password.",
             action: {
-                instructions: "To reset your password Please click on the given button",
+                instructions: "To reset your password please click the button below:",
                 button: {
-                    color: '#603496ff', // Optional action button color
-                    text: 'reset password',
+                    color: "#603496ff",
+                    text: "Reset Password",
                     link: passwordReseturl
                 },
             },
-            outro: "Need Help or have Questions? Just reply to email , We are ready to help"
-
+            outro: "Need help or have questions? Just reply to this email, we are ready to help."
         },
-    }
+    };
+};
 
-}
-
-
-export{
+export {
     emailVerificationMailgenContent,
     forgotPasswordMailgenContent,
     sendEmail
-}
+};
