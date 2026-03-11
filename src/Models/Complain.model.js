@@ -1,4 +1,10 @@
 import mongoose from "mongoose";
+const calculatePriority = (voteCount) => {
+  if (voteCount > 10) return "critical";
+  if (voteCount > 5) return "high";
+  if (voteCount > 2) return "medium";
+  return "low";
+};
 
 const complaintSchema = new mongoose.Schema(
   {
@@ -129,6 +135,9 @@ assignedAt: {
   index: true
 },
 
+escalatedAt: {
+  type: Date
+},
     /**
      * Admin resolution note (optional)
      */
@@ -138,6 +147,7 @@ assignedAt: {
     }
   },
   
+  
   { timestamps: true }
 );
 complaintSchema.pre("save", async function (next) {
@@ -145,7 +155,7 @@ complaintSchema.pre("save", async function (next) {
     const count = await mongoose.model("Complaint").countDocuments();
     this.complaintNumber = `SCMS-${new Date().getFullYear()}-${String(count + 1).padStart(6, "0")}`;
   }
-  // next();
+  next();
 });
 complaintSchema.pre("save", function(next) {
   this.priority = calculatePriority(this.voteCount);
