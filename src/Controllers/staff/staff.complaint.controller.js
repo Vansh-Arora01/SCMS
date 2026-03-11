@@ -85,8 +85,8 @@ export const updateAssignedComplaintStatus = asynchandler(async (req, res) => {
     throw new ApiError(400, "Invalid status value");
   }
 
-  console.log("Extracted Status:", status);
-  console.log("Extracted Resolution:", resolutionNote);
+  // console.log("Extracted Status:", status);
+  // console.log("Extracted Resolution:", resolutionNote);
 
   const updatedComplaint = await changeComplaintStatus({
     complaintId: req.params.id,

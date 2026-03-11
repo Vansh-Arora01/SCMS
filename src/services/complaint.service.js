@@ -99,12 +99,12 @@ export const changeComplaintStatus = async ({
     throw new ApiError(404, "Complaint not found");
   }
 
-  console.log("User collegeId:", user?.collegeId?.toString());
-  console.log("Complaint collegeId:", complaint?.collegeId?.toString());
-  console.log("Status transition:", complaint.status, "→", status);
-  console.log("AssignedTo:", assignedTo);
+  // console.log("User collegeId:", user?.collegeId?.toString());
+  // console.log("Complaint collegeId:", complaint?.collegeId?.toString());
+  // console.log("Status transition:", complaint.status, "→", status);
+  // console.log("AssignedTo:", assignedTo);
 
-  // ✅ SAFE college comparison
+  //  SAFE college comparison
   const complaintCollege = complaint?.collegeId?.toString();
   const userCollege = user?.collegeId?.toString();
 

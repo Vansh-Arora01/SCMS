@@ -44,7 +44,7 @@ export const createComplaint = asynchandler(async (req, res) => {
 
   // 🔥 Safe mail sending
   try {
-  console.log("📧 Preparing to send mail...");
+  ("📧 Preparing to send mail...");
 
   const mailContent = complaintLifecycleMailgenContent({
     username: req.user.name,   // or req.user.username (check!)
@@ -52,7 +52,7 @@ export const createComplaint = asynchandler(async (req, res) => {
     event: "REGISTERED"
   });
 
-  console.log("📦 Mail Content:", mailContent);
+  // console.log("📦 Mail Content:", mailContent);
 
   await sendEmail({
     email: req.user.email,

@@ -57,8 +57,8 @@ const {unhashedToken,hashedToken,tokenExpiry}= user.generateTemporaryToken();
 user.emailVerificationToken= hashedToken;
 user.emailVerificationExpiry= tokenExpiry;
 await user.save({validateBeforeSave:false});
-  console.log("Saved user token in DB (hashed):", user.emailVerificationToken);
-    console.log(user)
+//   console.log("Saved user token in DB (hashed):", user.emailVerificationToken);
+//     console.log(user)
 
     // here is the email version to see
     await sendEmail({
@@ -105,7 +105,7 @@ const verifyEmail = asynchandler(async(req,res,next)=>{
     .update(verificationToken)
     .digest("hex")
 
-    console.log("hashed Token :" , hashedToken);
+    // console.log("hashed Token :" , hashedToken);
 
     const user = await User.findOne({
         emailVerificationToken:hashedToken,
@@ -241,10 +241,10 @@ const login = asynchandler(async (req, res) => {
      // Normalize inputs: trim whitespace and enforce case sensitivity rules
     const normalizedEmail = email.trim().toLowerCase();
     const normalizedEnrollment = enrollment.trim().toUpperCase();
-    console.log("Login Attempt:", {
-        original: { email, enrollment },
-        normalized: { normalizedEmail, normalizedEnrollment }
-    });
+    // console.log("Login Attempt:", {
+    //     original: { email, enrollment },
+    //     normalized: { normalizedEmail, normalizedEnrollment }
+    // });
      const user = await User.findOne({
         enrollment: normalizedEnrollment,
         email: normalizedEmail
