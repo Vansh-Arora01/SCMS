@@ -173,67 +173,49 @@ const VOTE_ESCALATION_THRESHOLD = 10;
 // });
 
 export const voteOnComplaint = asynchandler(async (req, res) => {
+
   const complaintId = req.params.id;
   const userId = req.user._id;
 
-  const complaint = await Complaint.findOne({
-    _id: complaintId,
-    collegeId: req.user.collegeId,
-    eligibleforVote: true,
-    status: { $nin: ["RESOLVED", "REJECTED"] }
-  });
+  const complaint = await Complaint.findById(complaintId);
 
   if (!complaint) {
-    throw new ApiError(404, "Complaint not found or not eligible for voting");
+    throw new ApiError(404, "Complaint not found");
   }
 
-  const alreadyVoted = await Vote.findOne({
-    complaintId,
-    userId
-  });
+  const alreadyVoted = await Vote.findOne({ complaintId, userId });
 
   if (alreadyVoted) {
-    throw new ApiError(400, "You have already voted for this complaint");
+    throw new ApiError(400, "You already voted");
   }
 
-  await Vote.create({
-    complaintId,
-    userId
-  });
+  await Vote.create({ complaintId, userId });
 
-  // 🔼 increment vote
-  const updatedComplaint = await Complaint.findByIdAndUpdate(
-    complaintId,
-    { $inc: { voteCount: 1 } },
-    { new: true }
-  );
+  // increment vote
+  complaint.voteCount += 1;
 
-  // 🧠 Update priority
-  if (updatedComplaint.status !== "ESCALATED") {
-    updatedComplaint.priority = calculatePriority(updatedComplaint.voteCount);
+  // calculate priority
+  const newPriority = calculatePriority(complaint.voteCount);
+  complaint.priority = newPriority;
+
+  // escalation rule
+  if (complaint.voteCount >= VOTE_ESCALATION_THRESHOLD) {
+    complaint.status = "ESCALATED";
+    complaint.escalatedAt = new Date();
+    complaint.priority = "critical";
   }
 
-  // 🚨 Escalation rule
-  if (
-    updatedComplaint.voteCount >= VOTE_ESCALATION_THRESHOLD &&
-    updatedComplaint.status !== "ESCALATED"
-  ) {
-    updatedComplaint.status = "ESCALATED";
-    updatedComplaint.escalatedAt = new Date();
-    updatedComplaint.priority = "critical";
-  }
-
-  await updatedComplaint.save();
+  await complaint.save();
 
   return res.status(200).json(
     new ApiResponse(
       200,
       {
-        voteCount: updatedComplaint.voteCount,
-        priority: updatedComplaint.priority,
-        status: updatedComplaint.status
+        voteCount: complaint.voteCount,
+        priority: complaint.priority,
+        status: complaint.status
       },
-      "Vote registered successfully"
+      "Vote added"
     )
   );
 });

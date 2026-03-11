@@ -147,4 +147,8 @@ complaintSchema.pre("save", async function (next) {
   }
   // next();
 });
+complaintSchema.pre("save", function(next) {
+  this.priority = calculatePriority(this.voteCount);
+  next();
+});
 export const Complaint = mongoose.model("Complaint", complaintSchema);
