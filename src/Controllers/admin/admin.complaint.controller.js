@@ -155,7 +155,8 @@ export const getComplaintsSortedByDepartment = asynchandler(async (req, res) => 
       status: 1,
       priority: 1,
       assignedTo: 1,
-      createdAt: 1
+      createdAt: 1,
+      voteCount:1
     }
   )
     .populate("createdBy", "name email enrollment")
