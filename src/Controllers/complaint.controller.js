@@ -76,6 +76,7 @@ export const createComplaint = asynchandler(async (req, res) => {
       complaintId: complaint._id
     });
 
+    
     console.log("🔔 Notification created");
 
   } catch (notificationError) {

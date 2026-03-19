@@ -8,14 +8,19 @@ export const createNotification = async ({
   complaintId
 }) => {
   try {
-    await Notification.create({
+    const notification = await Notification.create({
       userId,
       role,
       title,
       message,
       complaintId
     });
+
+    console.log("✅ Notification saved:", notification._id);
+    return notification;
+
   } catch (error) {
-    console.error("Notification error:", error.message);
+    console.error("❌ Notification FULL ERROR:", error);
+    throw error; // 🔥 important for debugging
   }
 };
