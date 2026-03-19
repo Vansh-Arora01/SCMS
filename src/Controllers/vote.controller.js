@@ -205,6 +205,16 @@ export const voteOnComplaint = asynchandler(async (req, res) => {
     complaint.priority = "critical";
   }
 
+  console.log("Before vote:", complaint.voteCount, complaint.priority);
+
+complaint.voteCount += 1;
+
+complaint.priority = calculatePriority(complaint.voteCount);
+
+console.log("After vote:", complaint.voteCount, complaint.priority);
+
+await complaint.save();
+
   await complaint.save();
 
   return res.status(200).json(

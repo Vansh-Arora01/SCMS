@@ -155,10 +155,16 @@ complaintSchema.pre("save", async function (next) {
     const count = await mongoose.model("Complaint").countDocuments();
     this.complaintNumber = `SCMS-${new Date().getFullYear()}-${String(count + 1).padStart(6, "0")}`;
   }
-  next();
+  // next();
 });
 complaintSchema.pre("save", function(next) {
+  console.log("PRE SAVE RUNNING", this.voteCount);
+
   this.priority = calculatePriority(this.voteCount);
-  next();
+
+  console.log("NEW PRIORITY", this.priority);
+
+  // next();
 });
+
 export const Complaint = mongoose.model("Complaint", complaintSchema);
