@@ -30,61 +30,62 @@ export const createComplaint = asynchandler(async (req, res) => {
 
   const { title, description, category, isAnonymous, eligibleforVote } = req.body;
 
+  // ✅ ALWAYS store user (even if anonymous)
   const complaint = await Complaint.create({
     title,
     description,
     category,
     isAnonymous: Boolean(isAnonymous),
-    createdBy: isAnonymous ? null : req.user._id,
+    createdBy: req.user._id, // 🔥 FIXED
     collegeId: req.user.collegeId,
     status: "OPEN",
     eligibleforVote: Boolean(eligibleforVote),
     priorityScore: 0
   });
 
-  // 🔥 Safe mail sending
+  /* ================= EMAIL ================= */
   try {
-  ("📧 Preparing to send mail...");
+    const mailContent = complaintLifecycleMailgenContent({
+      username: isAnonymous ? "Anonymous User" : req.user.name, // 🔥 improvement
+      complaint,
+      event: "REGISTERED"
+    });
 
-  const mailContent = complaintLifecycleMailgenContent({
-    username: req.user.name,   // or req.user.username (check!)
-    complaint,
-    event: "REGISTERED"
-  });
+    await sendEmail({
+      email: req.user.email,
+      subject: mailContent.subject,
+      mailgenContent: mailContent.mailgenContent
+    });
 
-  // console.log("📦 Mail Content:", mailContent);
+    console.log("✅ Mail sent successfully");
+  } catch (mailError) {
+    console.log("❌ Mail failed:", mailError.message);
+  }
 
-  await sendEmail({
-    email: req.user.email,
-    subject: mailContent.subject,
-    mailgenContent: mailContent.mailgenContent  // ✅ ONLY body
-  });
-
-  console.log("✅ Mail sent successfully");
-
-} catch (mailError) {
-  console.log("❌ Mail failed:", mailError.message);
-}
-/* ================= NOTIFICATION ================= */
-
+  /* ================= NOTIFICATION ================= */
   try {
     await createNotification({
-     userId: req.user._id,
-      role: req.user.role,  // STUDENT / ADMIN
+      userId: req.user._id,
+      role: req.user.role,
       title: "Complaint Registered Successfully",
       message: `Your complaint "${complaint.title}" has been registered and is currently OPEN.`,
       complaintId: complaint._id
     });
 
-    
     console.log("🔔 Notification created");
-
   } catch (notificationError) {
     console.log("❌ Notification failed:", notificationError.message);
   }
 
+  // ✅ Hide identity in response if anonymous
+  const responseComplaint = complaint.toObject();
+
+  if (responseComplaint.isAnonymous) {
+    responseComplaint.createdBy = null;
+  }
+
   return res.status(201).json(
-    new ApiResponse(201, complaint, "Complaint created successfully")
+    new ApiResponse(201, responseComplaint, "Complaint created successfully")
   );
 });
 
@@ -99,27 +100,38 @@ export const listComplaints = asynchandler(async (req, res) => {
     collegeId: req.user.collegeId
   };
 
-  // If user is a student, only show their own complaints
+  // ✅ Student: see their own complaints ONLY
   if (req.user.role === "STUDENT") {
     filter.createdBy = req.user._id;
   }
 
   const complaints = await Complaint.find(filter)
     .sort({ priorityScore: -1, createdAt: -1 })
-    .select("-__v");
+    .select("-__v")
+    .populate("createdBy", "name email"); // optional (safe)
+
+  // ✅ Hide identity for anonymous complaints
+  const formattedComplaints = complaints.map(c => {
+    const obj = c.toObject();
+
+    if (obj.isAnonymous) {
+      obj.createdBy = null; // 🔥 hide identity
+    }
+
+    return obj;
+  });
 
   return res.status(200).json(
     new ApiResponse(
       200,
       {
-        count: complaints.length,
-        complaints
+        count: formattedComplaints.length,
+        complaints: formattedComplaints
       },
       "Complaints fetched successfully"
     )
   );
 });
-
 /**
  * =====================================================
  * GET COMPLAINT BY ID
