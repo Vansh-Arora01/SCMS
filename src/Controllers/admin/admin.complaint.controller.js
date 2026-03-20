@@ -109,29 +109,40 @@ export const assignComplaint = asynchandler(async (req, res) => {
 
   // ===================== 🔥 ADD THIS BLOCK =====================
 
-  try {
-    if (staff.email) {
-      await sendEmail({
-        to: staff.email,
-        subject: "New Complaint Assigned to You",
-        text: `
-Hello ${staff.name || "Staff"},
-
-A complaint has been assigned to you.
-
-Complaint ID: ${complaint.complaintNumber}
-Title: ${complaint.title}
-Category: ${complaint.category}
-
-Please login to the system and take action.
-
-- SCMS Team
-        `,
-      });
-    }
-  } catch (error) {
-    console.error("❌ Staff email failed:", error.message);
+ try {
+  if (staff.email) {
+    await sendEmail({
+      email: staff.email,
+      subject: "New Complaint Assigned to You",
+      mailgenContent: {
+        body: {
+          name: staff.name || "Staff",
+          intro: "A new complaint has been assigned to you.",
+          table: {
+            data: [
+              {
+                ComplaintID: complaint.complaintNumber,
+                Title: complaint.title,
+                Category: complaint.category
+              }
+            ]
+          },
+          action: {
+            instructions: "Click below to view the complaint:",
+            button: {
+              color: "#22c55e",
+              text: "View Complaint",
+              link: "https://scms-frontend-mt99.vercel.app/"
+            }
+          },
+          outro: "Please take action as soon as possible."
+        }
+      }
+    });
   }
+} catch (error) {
+  console.error("❌ Staff email failed:", error.message);
+}
 
   // ============================================================
 
