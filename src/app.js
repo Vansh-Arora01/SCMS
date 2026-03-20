@@ -43,6 +43,9 @@ import voteRoutes from "./Routes/vote.routes.js";
 import complainMediaRouter from "./Routes/complaintMedia.routes.js"
 
 import adminRoutes from "./Routes/admin.routes.js"
+import superAdminRoutes from "./Routes/superadmin.routes.js"
+
+
 
 import staffRoutes from "./Routes/staff.routes.js"
 
@@ -68,6 +71,8 @@ app.use('/api/v1/admin',adminRoutes)
 
 
 app.use('/api/v1/staff',staffRoutes)
+
+app.use("/api/v1/superadmin",superAdminRoutes);
 
 
 app.use("/api/v1/notifications",notificationRoutes)
