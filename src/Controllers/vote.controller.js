@@ -12,168 +12,9 @@ const calculatePriority = (voteCount) => {
   return "low";
 };
 const VOTE_ESCALATION_THRESHOLD = 10;
-/* ---------- ADD VOTE ---------- */
-// export const voteOnComplaint = asynchandler(async (req, res) => {
 
-//   const { complaintId } = req.params;
-//   const userId = req.user._id;
-
-//   const complaint = await Complaint.findById(complaintId);
-//   if (!complaint) {
-//     throw new ApiError(404, "Complaint not found");
-//   }
-
-//   if (["RESOLVED", "REJECTED"].includes(complaint.status)) {
-//   throw new ApiError(400, "Voting is closed for this complaint");
-// }
-
-
-//   // Create vote (DB prevents duplicates)
-//   try {
-//     await Vote.create({
-//       complaint: complaintId,
-//       user: userId
-//     });
-//   } catch (error) {
-//     if (error.code === 11000) {
-//       throw new ApiError(400, "You have already voted on this complaint");
-//     }
-//     throw error;
-//   }
-
-//   // Increment vote count
-//   complaint.voteCount += 1;
-
-//   // Auto priority update
-//  if (complaint.status !== "ESCALATED") {
-//   complaint.priority = calculatePriority(complaint.voteCount);
-// }
-//   if (
-//   complaint.voteCount >= VOTE_ESCALATION_THRESHOLD &&
-//   complaint.status !== "ESCALATED"
-// ) {
-//   complaint.status = "ESCALATED";
-//   complaint.escalatedAt = new Date();
-
-//   // optional: force higher visibility
-//   complaint.priority = "critical";
-// }
-
-//   await complaint.save();
-
-//   return res.status(201).json(
-//     new ApiResponse(
-//       201,
-//       {
-//         voteCount: complaint.voteCount,
-//         priority: complaint.priority
-//       },
-//       "Vote added successfully"
-//     )
-//   );
-// });
-
-// export const voteOnComplaint = asynchandler(async (req, res) => {
-//   const complaintId = req.params.id;
-//   const userId = req.user._id;
-
-  
-
-//   // 🔎 Check complaint exists AND belongs to same college
-//   const complaint = await Complaint.findOne({
-//     _id: complaintId,
-//     collegeId: req.user.collegeId,
-//     eligibleforVote: true,
-//     status: { $nin: ["RESOLVED", "REJECTED"] }
-//   });
-
-//   if (!complaint) {
-//     throw new ApiError(404, "Complaint not found or not eligible for voting");
-//   }
-
-//   // 🚫 Prevent duplicate vote
-//   const alreadyVoted = await Vote.findOne({
-//     complaintId,
-//     userId
-//   });
-
-//   if (alreadyVoted) {
-//     throw new ApiError(400, "You have already voted for this complaint");
-//   }
-
-//   // ✅ Create vote
-//   await Vote.create({
-//     complaintId,
-//     userId
-//   });
-
-//   // ✅ Atomic increment (SAFE)
-//   await Complaint.findByIdAndUpdate(
-//     complaintId,
-//     { $inc: { voteCount: 1 } }
-//   );
-
-//   return res.status(200).json(
-//     new ApiResponse(200, null, "Vote registered successfully")
-//   );
-// });
-
-// /* ---------- REMOVE VOTE (OPTIONAL BUT GOOD) ---------- */
-// export const removeVote = asynchandler(async (req, res) => {
-//   const { id: complaintId } = req.params;
-//   const userId = req.user._id;
-
-//   // 🔐 Role restriction
-  
-
-//   // 🔎 Check complaint exists + same college
-//   const complaint = await Complaint.findOne({
-//     _id: complaintId,
-//     collegeId: req.user.collegeId
-//   });
-
-//   if (!complaint) {
-//     throw new ApiError(404, "Complaint not found");
-//   }
-
-//   // 🗳 Remove vote
-//   const vote = await Vote.findOneAndDelete({
-//     complaintId,
-//     userId
-//   });
-
-//   if (!vote) {
-//     throw new ApiError(400, "You have not voted on this complaint");
-//   }
-
-//   // 🔄 Atomic decrement
-//   const updatedComplaint = await Complaint.findByIdAndUpdate(
-//     complaintId,
-//     { $inc: { voteCount: -1 } },
-//     { new: true }
-//   );
-
-//   // 🧠 Recalculate priority safely
-//   updatedComplaint.priority = calculatePriority(
-//     Math.max(0, updatedComplaint.voteCount)
-//   );
-
-//   await updatedComplaint.save();
-
-//   return res.status(200).json(
-//     new ApiResponse(
-//       200,
-//       {
-//         voteCount: updatedComplaint.voteCount,
-//         priority: updatedComplaint.priority
-//       },
-//       "Vote removed successfully"
-//     )
-//   );
-// });
 
 export const voteOnComplaint = asynchandler(async (req, res) => {
-
   const complaintId = req.params.id;
   const userId = req.user._id;
 
@@ -191,31 +32,22 @@ export const voteOnComplaint = asynchandler(async (req, res) => {
 
   await Vote.create({ complaintId, userId });
 
-  // increment vote
+  // ✅ increment ONLY ONCE
   complaint.voteCount += 1;
 
-  // calculate priority
-  const newPriority = calculatePriority(complaint.voteCount);
-  complaint.priority = newPriority;
-
-  // escalation rule
+  // ✅ escalation first
   if (complaint.voteCount >= VOTE_ESCALATION_THRESHOLD) {
     complaint.status = "ESCALATED";
     complaint.escalatedAt = new Date();
     complaint.priority = "critical";
+  } else {
+    // ✅ only calculate if not escalated
+    complaint.priority = calculatePriority(complaint.voteCount);
   }
 
-  console.log("Before vote:", complaint.voteCount, complaint.priority);
+  console.log("After vote:", complaint.voteCount, complaint.priority);
 
-complaint.voteCount += 1;
-
-complaint.priority = calculatePriority(complaint.voteCount);
-
-console.log("After vote:", complaint.voteCount, complaint.priority);
-
-await complaint.save();
-
-  await complaint.save();
+  await complaint.save(); // ✅ only once
 
   return res.status(200).json(
     new ApiResponse(
@@ -243,33 +75,32 @@ export const removeVote = asynchandler(async (req, res) => {
     throw new ApiError(404, "Complaint not found");
   }
 
-  const vote = await Vote.findOneAndDelete({
-    complaintId,
-    userId
-  });
+  const vote = await Vote.findOneAndDelete({ complaintId, userId });
 
   if (!vote) {
     throw new ApiError(400, "You have not voted on this complaint");
   }
 
-  const updatedComplaint = await Complaint.findByIdAndUpdate(
-    complaintId,
-    { $inc: { voteCount: -1 } },
-    { new: true }
-  );
+  // ✅ update safely
+  complaint.voteCount = Math.max(0, complaint.voteCount - 1);
 
-  updatedComplaint.priority = calculatePriority(
-    Math.max(0, updatedComplaint.voteCount)
-  );
+  // ✅ reset escalation if needed
+  if (complaint.voteCount < VOTE_ESCALATION_THRESHOLD) {
+    complaint.status = "OPEN";
+    complaint.escalatedAt = null;
+  }
 
-  await updatedComplaint.save();
+  complaint.priority = calculatePriority(complaint.voteCount);
+
+  await complaint.save();
 
   return res.status(200).json(
     new ApiResponse(
       200,
       {
-        voteCount: updatedComplaint.voteCount,
-        priority: updatedComplaint.priority
+        voteCount: complaint.voteCount,
+        priority: complaint.priority,
+        status: complaint.status
       },
       "Vote removed successfully"
     )

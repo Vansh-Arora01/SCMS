@@ -55,7 +55,9 @@ assignedAt: {
       default: 0,
       index: true
     },
-    priority: {
+
+
+  priority: {
   type: String,
   enum: ["low", "medium", "high", "critical"],
   default: "low"
@@ -150,21 +152,15 @@ escalatedAt: {
   
   { timestamps: true }
 );
-complaintSchema.pre("save", async function (next) {
+
+
+complaintSchema.pre("save", async function () {
   if (!this.complaintNumber) {
     const count = await mongoose.model("Complaint").countDocuments();
     this.complaintNumber = `SCMS-${new Date().getFullYear()}-${String(count + 1).padStart(6, "0")}`;
   }
-  // next();
-});
-complaintSchema.pre("save", function(next) {
-  console.log("PRE SAVE RUNNING", this.voteCount);
 
   this.priority = calculatePriority(this.voteCount);
-
-  console.log("NEW PRIORITY", this.priority);
-
-  // next();
 });
 
 export const Complaint = mongoose.model("Complaint", complaintSchema);
