@@ -5,6 +5,7 @@ import { Complaint } from "../../Models/Complain.model.js";
 import { changeComplaintStatus } from "../../services/complaint.service.js";
 import { createNotification } from "../../services/notification.service.js";
 import { User } from "../../Models/User.model.js";
+import { sendEmail } from "../../Utils/mail.js";
 
 export const getUnassignedComplaints = asynchandler(async (req, res) => {
   const complaints = await Complaint.find({
@@ -73,12 +74,10 @@ export const assignComplaint = asynchandler(async (req, res) => {
 
   const { enrollment, name } = req.body;
 
-  //  Enrollment compulsory
   if (!enrollment) {
     throw new ApiError(400, "Staff enrollment is required");
   }
 
-  //  Find staff by enrollment + role + college
   const staff = await User.findOne({
     enrollment,
     role: "STAFF",
@@ -89,7 +88,6 @@ export const assignComplaint = asynchandler(async (req, res) => {
     throw new ApiError(404, "Staff not found with this enrollment");
   }
 
-  // ✅ Optional name verification (extra safety)
   if (name && staff.name !== name) {
     throw new ApiError(400, "Name does not match enrollment");
   }
@@ -108,6 +106,34 @@ export const assignComplaint = asynchandler(async (req, res) => {
     message: `Complaint assigned to you`,
     complaintId: complaint._id
   });
+
+  // ===================== 🔥 ADD THIS BLOCK =====================
+
+  try {
+    if (staff.email) {
+      await sendEmail({
+        to: staff.email,
+        subject: "New Complaint Assigned to You",
+        text: `
+Hello ${staff.name || "Staff"},
+
+A complaint has been assigned to you.
+
+Complaint ID: ${complaint.complaintNumber}
+Title: ${complaint.title}
+Category: ${complaint.category}
+
+Please login to the system and take action.
+
+- SCMS Team
+        `,
+      });
+    }
+  } catch (error) {
+    console.error("❌ Staff email failed:", error.message);
+  }
+
+  // ============================================================
 
   res.status(200).json(
     new ApiResponse(200, complaint, "Complaint assigned successfully")
