@@ -22,7 +22,13 @@ export const createCollege = asynchandler(async (req, res) => {
     new ApiResponse(201, college, "College created successfully")
   );
 });
-export const getColleges = async (req, res) => {
+
+export const getColleges = asynchandler(async (req, res) => {
+
   const colleges = await College.find().sort({ createdAt: -1 });
-  res.json(colleges);
-};
+
+  res.status(200).json(
+    new ApiResponse(200, colleges, "Colleges fetched successfully")
+  );
+
+});
