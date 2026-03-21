@@ -45,7 +45,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       index: true,
-      enum: ["CCSIT", "Nursing", "Law","FOE","Dental","Pharmacy","Management"],
+      
     },
     collegeId: {
       type: mongoose.Schema.Types.ObjectId,
