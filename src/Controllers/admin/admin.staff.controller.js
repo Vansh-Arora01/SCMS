@@ -69,7 +69,16 @@ export const deleteStaff = asynchandler(async (req, res) => {
 });
 
 export const getAllStaff = asynchandler(async (req, res) => {
-  const staff = await User.find({ role: "STAFF" }).select("-password");
+  const admin = req.user;
+
+  if (!admin || admin.role !== "ADMIN") {
+    throw new ApiError(403, "Access denied");
+  }
+
+  const staff = await User.find({
+    role: "STAFF",
+    college: admin.college, // 🔥 FIX HERE
+  }).select("-password");
 
   res.status(200).json({
     success: true,
