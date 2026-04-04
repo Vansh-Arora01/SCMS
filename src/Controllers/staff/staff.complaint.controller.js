@@ -131,6 +131,28 @@ export const getStaffProfile = asynchandler(async (req, res) => {
 
 
 // optional vala request vala dal rha ho check kr lete ha 
+// export const requestReassignment = asynchandler(async (req, res) => {
+//   const { reason } = req.body;
+
+//   const complaint = await Complaint.findOne({
+//     _id: req.params.id,
+//     assignedTo: req.user._id
+//   });
+
+//   if (!complaint) {
+//     throw new ApiError(404, "Complaint not found");
+//   }
+
+//   complaint.reassignmentRequested = true;
+//   complaint.reassignmentReason = reason || "No reason provided";
+
+//   await complaint.save();
+
+//   res.status(200).json(
+//     new ApiResponse(200, null, "Reassignment request sent to admin")
+//   );
+// });
+
 export const requestReassignment = asynchandler(async (req, res) => {
   const { reason } = req.body;
 
@@ -143,10 +165,25 @@ export const requestReassignment = asynchandler(async (req, res) => {
     throw new ApiError(404, "Complaint not found");
   }
 
+  // Prevent duplicate requests
+  if (complaint.reassignmentRequested) {
+    throw new ApiError(400, "Reassignment already requested");
+  }
+
   complaint.reassignmentRequested = true;
   complaint.reassignmentReason = reason || "No reason provided";
 
   await complaint.save();
+
+  // 🔔 NOTIFY ADMIN
+  await createNotification({
+    userId: null, // optional (if you support broadcast OR skip this)
+    role: "ADMIN",
+    title: "Reassignment Request",
+    message: `Staff ${req.user.name} requested reassignment for complaint: ${complaint.title}`,
+    complaintId: complaint._id,
+    collegeId: complaint.collegeId   // VERY IMPORTANT (multi-college system)
+  });
 
   res.status(200).json(
     new ApiResponse(200, null, "Reassignment request sent to admin")

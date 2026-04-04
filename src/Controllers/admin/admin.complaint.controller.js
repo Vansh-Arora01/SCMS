@@ -180,6 +180,144 @@ export const reassignComplaint = asynchandler(async (req, res) => {
 });
 
 
+export const handleReassignmentRequest = asynchandler(async (req, res) => {
+  if (req.user.role !== "ADMIN") {
+    throw new ApiError(403, "Only admin can handle reassignment");
+  }
+
+  const { action, newStaffId } = req.body;
+
+  if (!["APPROVE", "REJECT"].includes(action)) {
+    throw new ApiError(400, "Invalid action");
+  }
+
+  const complaint = await Complaint.findById(req.params.id);
+
+  if (!complaint) {
+    throw new ApiError(404, "Complaint not found");
+  }
+
+  // 🔒 College check
+  if (String(complaint.collegeId) !== String(req.user.collegeId)) {
+    throw new ApiError(403, "Unauthorized");
+  }
+
+  // ❗ Request must exist and be pending
+  if (complaint.reassignmentStatus !== "PENDING") {
+    throw new ApiError(400, "No pending reassignment request");
+  }
+
+  const oldStaffId = complaint.assignedTo;
+
+  // =========================
+  // ✅ APPROVE
+  // =========================
+  if (action === "APPROVE") {
+
+    if (!newStaffId) {
+      throw new ApiError(400, "New staff ID is required");
+    }
+
+    const newStaff = await User.findOne({
+      _id: newStaffId,
+      role: "STAFF",
+      collegeId: req.user.collegeId
+    });
+
+    if (!newStaff) {
+      throw new ApiError(404, "New staff not found");
+    }
+
+    // 🚫 Prevent same assignment
+    if (String(oldStaffId) === String(newStaffId)) {
+      throw new ApiError(400, "Already assigned to this staff");
+    }
+
+    // 🔁 Update core fields
+    complaint.previousAssignedTo = oldStaffId;
+    complaint.assignedTo = newStaffId;
+    complaint.assignedAt = new Date();
+
+    // 🎯 Update reassignment tracking
+    complaint.reassignmentRequested = false;
+    complaint.reassignmentStatus = "APPROVED";
+    complaint.reassignmentHandledBy = req.user._id;
+    complaint.reassignmentHandledAt = new Date();
+
+    await complaint.save();
+
+    // 🔔 Notify OLD staff
+    if (oldStaffId) {
+      await createNotification({
+        userId: oldStaffId,
+        role: "STAFF",
+        title: "Reassignment Approved",
+        message: `Your reassignment request for "${complaint.title}" has been approved`,
+        complaintId: complaint._id
+      });
+    }
+
+    // 🔔 Notify NEW staff
+    await createNotification({
+      userId: newStaffId,
+      role: "STAFF",
+      title: "New Complaint Assigned",
+      message: `You have been assigned complaint "${complaint.title}"`,
+      complaintId: complaint._id
+    });
+
+    return res.status(200).json(
+      new ApiResponse(200, complaint, "Reassignment approved")
+    );
+  }
+
+  // =========================
+  // ❌ REJECT
+  // =========================
+  if (action === "REJECT") {
+
+    complaint.reassignmentRequested = false;
+    complaint.reassignmentStatus = "REJECTED";
+    complaint.reassignmentHandledBy = req.user._id;
+    complaint.reassignmentHandledAt = new Date();
+
+    await complaint.save();
+
+    // 🔔 Notify staff
+    if (oldStaffId) {
+      await createNotification({
+        userId: oldStaffId,
+        role: "STAFF",
+        title: "Reassignment Rejected",
+        message: `Your reassignment request for "${complaint.title}" was rejected`,
+        complaintId: complaint._id
+      });
+    }
+
+    return res.status(200).json(
+      new ApiResponse(200, complaint, "Reassignment rejected")
+    );
+  }
+});
+export const getReassignmentRequests = asynchandler(async (req, res) => {
+  if (req.user.role !== "ADMIN") {
+    throw new ApiError(403, "Admin only");
+  }
+
+  const complaints = await Complaint.find({
+    collegeId: req.user.collegeId,
+    reassignmentStatus: "PENDING"
+  })
+  .populate("assignedTo", "name email")
+  .populate("reassignmentRequestedBy", "name email")
+  .sort({ reassignmentRequestedAt: -1 });
+
+  res.status(200).json(
+    new ApiResponse(200, complaints, "Reassignment requests fetched")
+  );
+});
+
+
 
 //one more sorted view one 
 export const getComplaintsSortedByDepartment = asynchandler(async (req, res) => {

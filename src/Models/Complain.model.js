@@ -131,6 +131,46 @@ assignedAt: {
     reassignmentReason:{
       type:String
     },
+    // 🔁 Reassignment System (Production Level)
+reassignmentRequested: {
+  type: Boolean,
+  default: false
+},
+
+reassignmentReason: {
+  type: String
+},
+
+reassignmentStatus: {
+  type: String,
+  enum: ["NONE", "PENDING", "APPROVED", "REJECTED"],
+  default: "NONE",
+  index: true
+},
+
+reassignmentRequestedBy: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "User"
+},
+
+reassignmentHandledBy: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "User"
+},
+
+reassignmentRequestedAt: {
+  type: Date
+},
+
+reassignmentHandledAt: {
+  type: Date
+},
+
+previousAssignedTo: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "User"
+},
+
     complaintNumber: {
   type: String,
   unique: true,
