@@ -10,7 +10,7 @@ export const createNotification = async ({
   collegeId
 }) => {
 
-  // ✅ Case 1: Direct user notification
+  // Case 1: Direct user notification
   if (userId) {
     return await Notification.create({
       userId,
@@ -21,7 +21,7 @@ export const createNotification = async ({
     });
   }
 
-  // ✅ Case 2: Role-based notification (MULTI USER)
+  // Case 2: Role-based notification (MULTI USER)
   if (role) {
     const users = await User.find({
       role,
@@ -32,7 +32,7 @@ export const createNotification = async ({
 
     const notifications = users.map((user) => ({
       userId: user._id,
-      role: user.role, // 🔥 IMPORTANT (use user's actual role)
+      role: user.role, // IMPORTANT (use user's actual role)
       title,
       message,
       complaintId

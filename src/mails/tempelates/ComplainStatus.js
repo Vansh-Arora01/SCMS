@@ -40,7 +40,7 @@ const complaintLifecycleMailgenContent = ({
 
  return {
   subject: `${current.subject} | ${complaint.complaintNumber || ""}`,
-  mailgenContent: {              // 🔥 wrap inside mailgenContent
+  mailgenContent: {              // mailgen content as we have made
     body: {
       name: username || "User",
       intro: current.intro,

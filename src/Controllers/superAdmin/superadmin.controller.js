@@ -28,12 +28,12 @@ export const createAdmin = asynchandler(async (req, res) => {
     email,
     password,
     enrollment,
-    role: "ADMIN",   // 🔥 MAIN CHANGE
-    collegeId,       // 🔥 from frontend
-    college          // optional (if you store name also)
+    role: "ADMIN",   //  MAIN CHANGE
+    collegeId,       // from frontend as college me dena pdega idhar 
+    college          // id aa gyi to college fetch kr lrnge
   });
 
-  // Remove password from response
+  
   const createdAdmin = await User.findById(admin._id).select("-password");
 
   res.status(201).json(
@@ -47,7 +47,7 @@ export const deleteAdmin = asynchandler(async (req, res) => {
     throw new ApiError(404, "Admin not found");
   }
 
-  // Optional: check if admin has active staff / complaints
+  
   const activeComplaints = await Complaint.countDocuments({
     collegeId: admin.collegeId,
     status: { $nin: ["RESOLVED", "REJECTED"] }
@@ -68,7 +68,7 @@ export const deleteAdmin = asynchandler(async (req, res) => {
 });
 export const getAllAdmins = asynchandler(async (req, res) => {
 
-  // 🔐 Only SUPER ADMIN allowed
+  
   if (req.user.role !== "SUPER_ADMIN") {
     throw new ApiError(403, "Only Super Admin can access admins");
   }

@@ -23,49 +23,6 @@ export const getUnassignedComplaints = asynchandler(async (req, res) => {
   );
 });
 
-
-// export const assignComplaint = asynchandler(async (req, res) => {
-
-//   if (req.user.role !== "ADMIN") {
-//     throw new ApiError(403, "Only admin can assign complaints");
-//   }
-
-//   const { assignedTo } = req.body;
-
-//   const staff = await User.findById(assignedTo);
-
-//   if (!staff || staff.role !== "STAFF") {
-//     throw new ApiError(400, "Invalid staff");
-//   }
-
-//   if (staff.collegeId !== req.user.collegeId) {
-//     throw new ApiError(403, "Staff not in same college");
-//   }
-
-//   const complaint = await changeComplaintStatus({
-//     complaintId: req.params.id,
-//     status: "ASSIGNED",
-//     assignedTo,
-//     user: req.user
-//   });
-
-//   await createNotification({
-//     userId: assignedTo,
-//     role: "STAFF",
-//     title: "New Complaint Assigned",
-//     message: `Complaint #${complaint.complaintNumber} assigned to you`,
-//     complaintId: complaint._id
-//   });
-
-//   res.status(200).json(
-//     new ApiResponse(200, complaint, "Complaint assigned successfully")
-//   );
-// });
-
-
-
-// reassigning 
-
 export const assignComplaint = asynchandler(async (req, res) => {
 
   if (req.user.role !== "ADMIN") {
@@ -107,7 +64,7 @@ export const assignComplaint = asynchandler(async (req, res) => {
     complaintId: complaint._id
   });
 
-  // ===================== 🔥 ADD THIS BLOCK =====================
+  // ===================== mail to staff when complain assigned  =====================
 
  try {
   if (staff.email) {
@@ -141,10 +98,10 @@ export const assignComplaint = asynchandler(async (req, res) => {
     });
   }
 } catch (error) {
-  console.error("❌ Staff email failed:", error.message);
+  console.error(" Staff email failed:", error.message);
 }
 
-  // ============================================================
+  
 
   res.status(200).json(
     new ApiResponse(200, complaint, "Complaint assigned successfully")
@@ -326,7 +283,7 @@ export const getComplaintsSortedByDepartment = asynchandler(async (req, res) => 
     {
       title: 1,
       description: 1,
-      category: 1,   // ✅ fixed
+      category: 1,   //  fixed
       status: 1,
       priority: 1,
       assignedTo: 1,
@@ -337,7 +294,7 @@ export const getComplaintsSortedByDepartment = asynchandler(async (req, res) => 
   )
     .populate("createdBy", "name email enrollment")
     .populate("assignedTo", "name email role enrollment")
-    .sort({ category: 1, createdAt: -1 });  // ✅ fixed
+    .sort({ category: 1, createdAt: -1 });  // fixed
 
   res.status(200).json(
     new ApiResponse(

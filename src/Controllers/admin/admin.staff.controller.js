@@ -8,12 +8,12 @@ import { User } from "../../Models/User.model.js";
 export const createStaff = asynchandler(async (req, res) => {
   const { name, email, password, enrollment, department } = req.body;
 
-  // 🔐 Only admin allowed
+  
   if (req.user.role !== "ADMIN") {
     throw new ApiError(403, "Only admin can create staff");
   }
 
-  // 🔎 Prevent duplicates
+  
   const existing = await User.findOne({
     $or: [{ email }, { enrollment }]
   });
@@ -77,7 +77,7 @@ export const getAllStaff = asynchandler(async (req, res) => {
 
   const staff = await User.find({
     role: "STAFF",
-    college: admin.college, // 🔥 FIX HERE
+    college: admin.college, // admin ka hi college hoga staff ka 
   }).select("-password");
 
   res.status(200).json({

@@ -120,7 +120,7 @@ userSchema.methods.generateAccessToken = function () {
       collegeId: this.collegeId,
     },
     process.env.ACCESS_SECRET,
-    { expiresIn: "7d" },
+    { expiresIn: "1d" },
   );
 };
 userSchema.methods.generateRefreshToken = function () {

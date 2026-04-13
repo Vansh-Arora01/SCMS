@@ -16,12 +16,7 @@ import { sendEmail } from "../Utils/mail.js";
 import { complaintLifecycleMailgenContent } from "../mails/tempelates/ComplainStatus.js"
 import { createNotification } from "../services/notification.service.js";
 
-/**
- * =====================================================
- * CREATE COMPLAINT (USER)
- * POST /complaints
- * =====================================================
- */
+
 export const createComplaint = asynchandler(async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -30,7 +25,7 @@ export const createComplaint = asynchandler(async (req, res) => {
 
   const { title, description, category, isAnonymous, eligibleforVote } = req.body;
 
-  // ✅ ALWAYS store user (even if anonymous)
+  // 
   const complaint = await Complaint.create({
     title,
     description,
@@ -62,7 +57,7 @@ export const createComplaint = asynchandler(async (req, res) => {
     console.log("❌ Mail failed:", mailError.message);
   }
 
-  /* ================= NOTIFICATION ================= */
+  /** Notify  */
   try {
     await createNotification({
       userId: req.user._id,
@@ -77,7 +72,7 @@ export const createComplaint = asynchandler(async (req, res) => {
     console.log("❌ Notification failed:", notificationError.message);
   }
 
-  // ✅ Hide identity in response if anonymous
+  // if anonymous 
   const responseComplaint = complaint.toObject();
 
   if (responseComplaint.isAnonymous) {
@@ -89,18 +84,14 @@ export const createComplaint = asynchandler(async (req, res) => {
   );
 });
 
-/**
- * =====================================================
- * LIST COMPLAINTS (USER / ADMIN)
- * GET /complaints
- * =====================================================
- */
+
+
 export const listComplaints = asynchandler(async (req, res) => {
   const filter = {
     collegeId: req.user.collegeId
   };
 
-  // ✅ Student: see their own complaints ONLY
+  // can see the complaints they created 
   if (req.user.role === "STUDENT") {
     filter.createdBy = req.user._id;
   }
@@ -110,12 +101,12 @@ export const listComplaints = asynchandler(async (req, res) => {
     .select("-__v")
     .populate("createdBy", "name email"); // optional (safe)
 
-  // ✅ Hide identity for anonymous complaints
+  // if anonymous 
   const formattedComplaints = complaints.map(c => {
     const obj = c.toObject();
 
     if (obj.isAnonymous) {
-      obj.createdBy = null; // 🔥 hide identity
+      obj.createdBy = null; 
     }
 
     return obj;
@@ -132,12 +123,7 @@ export const listComplaints = asynchandler(async (req, res) => {
     )
   );
 });
-/**
- * =====================================================
- * GET COMPLAINT BY ID
- * GET /complaints/:id
- * =====================================================
- */
+
 export const getComplaintById = asynchandler(async (req, res) => {
   const complaint = await Complaint.findById(req.params.id);
 
@@ -145,7 +131,7 @@ export const getComplaintById = asynchandler(async (req, res) => {
     throw new ApiError(404, "Complaint not found");
   }
 
-  // Tenant isolation
+  
   if (!checkComplaintCollege(complaint, req.user)) {
     throw new ApiError(403, "Access denied");
   }
@@ -165,16 +151,15 @@ export const getComplaintById = asynchandler(async (req, res) => {
 export const getVoteableComplaints = asynchandler(async (req, res) => {
   const userId = req.user._id;
 
-  // 1. Get complaints (college isolated)
   const complaints = await Complaint.find({
-    collegeId: req.user.collegeId,   // 🔥 IMPORTANT
+    collegeId: req.user.collegeId,   // college only what user belongs to 
     eligibleforVote: true,
     status: { $nin: ["RESOLVED", "REJECTED"] }
   })
     .select("title category voteCount status createdAt description attachments")
     .sort({ createdAt: -1 });
 
-  // 2. Get user's votes for these complaints
+ 
   const complaintIds = complaints.map(c => c._id);
 
   const userVotes = await Vote.find({
@@ -182,7 +167,7 @@ export const getVoteableComplaints = asynchandler(async (req, res) => {
     complaintId: { $in: complaintIds }
   });
 
-  // 3. Map hasVoted status
+  
   const voteMap = new Set(userVotes.map(v => v.complaintId.toString()));
 
   const complaintsWithStatus = complaints.map(c => ({

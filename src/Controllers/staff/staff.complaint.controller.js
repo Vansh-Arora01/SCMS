@@ -78,7 +78,7 @@ export const updateAssignedComplaintStatus = asynchandler(async (req, res) => {
     throw new ApiError(403, "Unauthorized");
   }
 
-  //  Extract properly
+
   const { status, resolutionNote } = req.body;
 
   if (!status || typeof status !== "string") {
@@ -95,7 +95,7 @@ export const updateAssignedComplaintStatus = asynchandler(async (req, res) => {
     user: req.user
   });
 
-  // 🔔 Notify complaint owner
+  //  Notify complaint owner
   await createNotification({
     userId: complaint.createdBy,
     role: "STUDENT",
@@ -175,14 +175,14 @@ export const requestReassignment = asynchandler(async (req, res) => {
 
   await complaint.save();
 
-  // 🔔 NOTIFY ADMIN
+  //  NOTIFY ADMIN that an reassignment req comes 
   await createNotification({
-    userId: null, // optional (if you support broadcast OR skip this)
+    userId: null, // 
     role: "ADMIN",
     title: "Reassignment Request",
     message: `Staff ${req.user.name} requested reassignment for complaint: ${complaint.title}`,
     complaintId: complaint._id,
-    collegeId: complaint.collegeId   // VERY IMPORTANT (multi-college system)
+    collegeId: complaint.collegeId   // college as same chl rha hoga complain admon staff ka 
   });
 
   res.status(200).json(

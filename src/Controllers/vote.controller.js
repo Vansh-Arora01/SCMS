@@ -32,22 +32,22 @@ export const voteOnComplaint = asynchandler(async (req, res) => {
 
   await Vote.create({ complaintId, userId });
 
-  // ✅ increment ONLY ONCE
+  //  increment ONLY ONCE
   complaint.voteCount += 1;
 
-  // ✅ escalation first
+  // escalation first
   if (complaint.voteCount >= VOTE_ESCALATION_THRESHOLD) {
     complaint.status = "ESCALATED";
     complaint.escalatedAt = new Date();
     complaint.priority = "critical";
   } else {
-    // ✅ only calculate if not escalated
+   
     complaint.priority = calculatePriority(complaint.voteCount);
   }
 
   console.log("After vote:", complaint.voteCount, complaint.priority);
 
-  await complaint.save(); // ✅ only once
+  await complaint.save(); // save whenever changes the complain in db 
 
   return res.status(200).json(
     new ApiResponse(
@@ -61,7 +61,8 @@ export const voteOnComplaint = asynchandler(async (req, res) => {
     )
   );
 });
-/* ---------- REMOVE VOTE ---------- */
+
+
 export const removeVote = asynchandler(async (req, res) => {
   const complaintId = req.params.id;
   const userId = req.user._id;
@@ -81,10 +82,10 @@ export const removeVote = asynchandler(async (req, res) => {
     throw new ApiError(400, "You have not voted on this complaint");
   }
 
-  // ✅ update safely
+  // update safely
   complaint.voteCount = Math.max(0, complaint.voteCount - 1);
 
-  // ✅ reset escalation if needed
+  //  reset escalation if needed
   if (complaint.voteCount < VOTE_ESCALATION_THRESHOLD) {
     complaint.status = "OPEN";
     complaint.escalatedAt = null;

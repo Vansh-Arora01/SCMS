@@ -61,7 +61,7 @@ router.get(
 //   updateComplaintStatus
 // );
 
-// 2 updated routers 
+// to get all the complaints which are open and can be voted by students
 router.get("/voteable",verifyJWT,getVoteableComplaints)
 router.get("/status/:id", verifyJWT, getComplaintStatusById);
 

@@ -122,7 +122,7 @@ const verifyEmail = asynchandler(async(req,res,next)=>{
   user.isEmailVerified = true;
   await user.save({ validateBeforeSave: false });
 
-  console.log("✅ Email verified for:", user.email);
+  console.log(" Email verified for:", user.email);
 
   return res.status(200).json(
     new ApiResponse(
