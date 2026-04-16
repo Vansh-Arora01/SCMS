@@ -68,6 +68,22 @@ export const deleteStaff = asynchandler(async (req, res) => {
   );
 });
 
+export const updateStaff = asynchandler(async (req, res) => {
+   const { id } = req.params;
+  const updatedstaff = await User.findByIdAndUpdate(id,
+    req.body,
+    { new: true }
+  ).select("-password");  
+  if (!updatedstaff || updatedstaff.role !== "STAFF") {
+    throw new ApiError(404, "Staff not found");
+  } 
+  res.status(200).json(
+    new ApiResponse(200, updatedstaff, "Staff updated successfully")
+  );
+});
+  
+
+
 export const getAllStaff = asynchandler(async (req, res) => {
   const admin = req.user;
 

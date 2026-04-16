@@ -1,7 +1,7 @@
 import express from "express";
 import { verifyJWT } from "../Middlewares/Auth.middleware.js";
 import { allowRoles } from "../Middlewares/role.middleware.js";
-import {getUnassignedComplaints,assignComplaint,reassignComplaint,getComplaintsSortedByDepartment,getComplaintsCategoryWise,handleReassignmentRequest,getReassignmentRequests} from "../Controllers/admin/admin.complaint.controller.js"
+import {getUnassignedComplaints,assignComplaint,reassignComplaint,getComplaintsSortedByDepartment,getComplaintsCategoryWise,handleReassignmentRequest,getReassignmentRequests,updateStaff} from "../Controllers/admin/admin.complaint.controller.js"
 import {createStaff,deleteStaff,getAdminProfile,getAllStaff} from "../Controllers/admin/admin.staff.controller.js"
 import { getAdminDashboardStats } from "../Controllers/admin/dashboard.controller.js";
 
@@ -60,6 +60,7 @@ router.delete(
   allowRoles("ADMIN"),
   deleteStaff
 );
+router.put("/update/:id", updateStaff);
 
 router.get(
   "/all-staff",
