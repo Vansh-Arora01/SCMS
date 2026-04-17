@@ -1,7 +1,7 @@
 import express from "express";
 import { verifyJWT } from "../Middlewares/Auth.middleware.js";
 import { allowRoles } from "../Middlewares/role.middleware.js";
-import { createAdmin,deleteAdmin ,getAllAdmins, getSuperAdminProfile} from "../Controllers/superAdmin/superadmin.controller.js";
+import { createAdmin,deleteAdmin ,getAllAdmins, getSuperAdminProfile,updateAdmin} from "../Controllers/superAdmin/superadmin.controller.js";
 import { createCollege,getColleges } from "../Controllers/college.controller.js";
 
 const router = express.Router();
@@ -37,6 +37,11 @@ router.get(
   allowRoles("SUPER_ADMIN"),
   getSuperAdminProfile
 );
+
+router.put(
+  "/update/:id",
+   updateAdmin);
+
 router.get(
   "/all-admins",
   verifyJWT,

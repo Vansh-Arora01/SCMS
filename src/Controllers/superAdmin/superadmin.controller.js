@@ -91,6 +91,20 @@ export const getAllAdmins = asynchandler(async (req, res) => {
   );
 });
 
+export const updateAdmin = asynchandler(async (req, res) => {
+   const { id } = req.params;
+  const updatedadmin = await User.findByIdAndUpdate(id,
+    req.body,
+    { new: true }
+  ).select("-password");  
+  if (!updatedadmin || updatedadmin.role !== "ADMIN") {
+    throw new ApiError(404, "admin not found");
+  } 
+  res.status(200).json(
+    new ApiResponse(200, updatedadmin, "admin updated successfully")
+  );
+});
+
 export const getSuperAdminProfile = asynchandler(async (req, res) => {
   if (req.user.role !== "SUPER_ADMIN") {
     throw new ApiError(403, "Super Admin only");
